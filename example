@@ -1,0 +1,22 @@
+#!perl
+
+use JSON::Validator;
+
+my $validator = JSON::Validator->new;
+
+$validator->schema('./rulesets.yaml');
+
+my $input = {
+  transaction => {
+    queries => [{
+      select => {
+        from => {table => 'users'},
+        columns => [{column => '*'}]
+      }
+    }]
+  }
+};
+
+my @errors = $validator->validate($input);
+
+die join "\n", sort map "$_", @errors if @errors;

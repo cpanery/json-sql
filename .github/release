@@ -1,0 +1,38 @@
+#!/bin/bash
+
+export V=$1
+
+# Ensure release version is explicit
+if [ ! -n "$V" ]; then
+  echo 'No release version!' && exit 0;
+fi
+
+# Check the repo is in ready-state
+if ! git diff-index --quiet HEAD --; then
+  echo "Uncommitted changes!" && exit 0;
+fi
+
+# Delete existing release tag (if exists)
+git tag -d $V 2> /dev/null
+git push origin :refs/tags/$V 2> /dev/null
+
+# Persist Release VERSION
+echo $V > VERSION
+
+# Create version directory
+mkdir -p schemas/$V
+
+# Generate README
+perl -Ilib -Ilocal/lib/perl5 ./document
+
+# Push generated changes
+if ! git diff-index --quiet HEAD --; then
+  git add . && git commit -m "Release v$V"
+fi
+
+# Build, Tag, and Push Package Release
+git tag $V
+git push
+
+# Re-push all tags (just in case)
+git push --tags 2> /dev/null

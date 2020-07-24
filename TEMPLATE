@@ -1,0 +1,90 @@
+# JSON-SQL
+
+JSON-SQL is a specification which defines a standard, database-vendor-agnostic
+common SQL statement description (and JSON representation). This is a
+specification aims to be a standards-compliant, e.g. SQL-92, and allow for the
+development of better SQL statement generation, libraries, object-mappers, and
+other tooling. The specification is a valid JSON Schema document which can be
+validated using any JSON Schema validator with support for
+_"https://json-schema.org/draft/2019-09/schema"_.
+
+## Features
+
+- vendor-agnostic
+- language-agnostic
+- sql as a data exchange format
+- pre-flight sql statement syntax validation
+- common sql coverage (99.999% standards-compliant)
+
+## Demonstration
+
+**Note:** Parser and SQL statement generation not included!
+
+This example JSON-SQL data structure:
+
+```
+{
+   "table-create" : {
+      "name" : "removed_users",
+      "query" : {
+         "select" : {
+            "columns" : [
+               {
+                  "column" : "*"
+               }
+            ],
+            "from" : {
+               "table" : "users"
+            },
+            "where" : [
+              {
+                "not-null": {
+                  "column" : "deleted"
+                }
+              }
+            ]
+         }
+      },
+      "safe" : true,
+      "temp" : true
+   }
+}
+```
+
+Could be used to generate this SQL query:
+
+```
+CREATE TEMPORARY TABLE IF NOT EXISTS removed_users AS (
+  SELECT * FROM users WHERE deleted IS NOT NULL
+)
+```
+
+## Definitions
+
+{content}
+
+# AUTHOR
+
+Al Newkirk, @iamalnewkirk
+
+# LICENSE
+
+Copyright (C) 2020, Al Newkirk, et al.
+
+This is free software; you can redistribute it and/or modify it under the terms
+of the The Apache License, Version 2.0, as elucidated in the ["license
+file"](https://github.com/iamalnewkirk/json-sql/blob/master/LICENSE).
+
+# PROJECT
+
+[Wiki](https://github.com/iamalnewkirk/json-sql/wiki)
+
+[Project](https://github.com/iamalnewkirk/json-sql)
+
+[Initiatives](https://github.com/iamalnewkirk/json-sql/projects)
+
+[Milestones](https://github.com/iamalnewkirk/json-sql/milestones)
+
+[Contributing](https://github.com/iamalnewkirk/json-sql/blob/master/CONTRIBUTE.md)
+
+[Issues](https://github.com/iamalnewkirk/json-sql/issues)

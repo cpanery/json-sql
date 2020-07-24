@@ -1,0 +1,33 @@
+#!perl
+
+use JSON::PP;
+use Path::Tiny;
+use YAML::PP;
+
+my $yaml = YAML::PP->new(boolean => 'JSON::PP');
+
+my ($schema) = $yaml->load_file('./rulesets.yaml');
+
+my @header;
+my @output;
+
+for my $name (sort keys %{$schema->{definitions}}) {
+  push @header, "- [$name](#$name)";
+
+  my $definition = $schema->{definitions}{$name};
+  push @output, "## $name";
+  push @output, $definition->{description};
+
+  for my $item (sort {($a =~ s/\D//gr) <=> ($b =~ s/\D//gr)}
+    keys %{$definition->{"x-examples"}}) {
+    my $example = $definition->{"x-examples"}{$item};
+    my $encoded = JSON::PP->new->ascii->pretty->canonical->encode($example);
+
+    push @output, "### $item";
+    push @output, sprintf("```\n$encoded```");
+  }
+}
+
+my $content = join("", join("\n", @header), "\n\n", join("\n\n", @output));
+
+path('README.md')->spew(path('TEMPLATE')->slurp =~ s/\{content\}/$content/r);
