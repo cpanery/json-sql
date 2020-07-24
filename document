@@ -17,6 +17,7 @@ for my $name (sort keys %{$schema->{definitions}}) {
   my $definition = $schema->{definitions}{$name};
   push @output, "## $name";
   push @output, $definition->{description};
+  push @output, "[definitions](#definitions)";
 
   for my $item (sort {($a =~ s/\D//gr) <=> ($b =~ s/\D//gr)}
     keys %{$definition->{"x-examples"}}) {

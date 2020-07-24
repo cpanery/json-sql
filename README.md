@@ -1,11 +1,12 @@
 # JSON-SQL
 
-JSON-SQL is a specification which defines a standard, database-vendor-agnostic
-common SQL statement description (and JSON representation). This is a
-specification aims to be a standards-compliant, e.g. SQL-92, and allow for the
-development of better SQL statement generation, libraries, object-mappers, and
-other tooling. The specification is a valid JSON Schema document which can be
-validated using any JSON Schema validator with support for
+JSON-SQL is a specification which defines a standard for describing SQL
+statements using language-agnostic representations (data structures). This
+specification aims to be standards-compliant, i.e. supporting the full-range of
+SQL-92 expressions, and to enable the development of better (more accurate and
+robust) SQL statement generation, libraries, object-mappers, and other tooling.
+The specification is a valid JSON-Schema document which can be validated using
+any JSON-Schema validator with support for
 _"https://json-schema.org/draft/2019-09/schema"_.
 
 ## Features
@@ -16,16 +17,16 @@ _"https://json-schema.org/draft/2019-09/schema"_.
 - pre-flight sql statement syntax validation
 - common sql coverage (99.999% standards-compliant)
 
-## Demonstration
+**note:** sql parser and generator not included
 
-**Note:** Parser and SQL statement generation not included!
+## Demonstration
 
 This example JSON-SQL data structure:
 
 ```
 {
    "table-create" : {
-      "name" : "removed_users",
+      "name" : "inactive_users",
       "query" : {
          "select" : {
             "columns" : [
@@ -37,6 +38,14 @@ This example JSON-SQL data structure:
                "table" : "users"
             },
             "where" : [
+              {
+                "eq": [
+                  {
+                    "column" : "verified"
+                  },
+                  1
+                ]
+              },
               {
                 "not-null": {
                   "column" : "deleted"
@@ -54,8 +63,8 @@ This example JSON-SQL data structure:
 Could be used to generate this SQL query:
 
 ```
-CREATE TEMPORARY TABLE IF NOT EXISTS removed_users AS (
-  SELECT * FROM users WHERE deleted IS NOT NULL
+CREATE TEMPORARY TABLE IF NOT EXISTS inactive_users AS (
+  SELECT * FROM users WHERE verified = 1 AND deleted IS NOT NULL
 )
 ```
 
@@ -114,6 +123,8 @@ CREATE TEMPORARY TABLE IF NOT EXISTS removed_users AS (
 ## binary
 
 BINARY is an EXPRESSION which uses the first and second EXPRESSION to perform a binary operation.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -214,6 +225,8 @@ BINARY is an EXPRESSION which uses the first and second EXPRESSION to perform a 
 
 BINDING is an EXPRESSION which represents is a named-placeholder to be substituted later.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -233,6 +246,8 @@ BINDING is an EXPRESSION which represents is a named-placeholder to be substitut
 ## case
 
 CASE is an EXPRESSION which provides a mechanism for declaring conditional expressions.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -316,6 +331,8 @@ CASE is an EXPRESSION which provides a mechanism for declaring conditional expre
 
 CAST is an EXPRESSION which specifies a conversion from one data type to another.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -358,6 +375,8 @@ CAST is an EXPRESSION which specifies a conversion from one data type to another
 
 COLUMN represents TABLE column reference.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -377,6 +396,8 @@ COLUMN represents TABLE column reference.
 ## column-create
 
 COLUMN-CREATE changes the definition of an existing table by adding a new column.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -434,6 +455,8 @@ COLUMN-CREATE changes the definition of an existing table by adding a new column
 
 COLUMN-RENAME changes the definition of an existing table by renaming a new column.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -486,6 +509,8 @@ COLUMN-RENAME changes the definition of an existing table by renaming a new colu
 
 CONSTRAINT-CREATE changes the definition of an existing table by adding a new foreign-key constraint.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -524,6 +549,8 @@ CONSTRAINT-CREATE changes the definition of an existing table by adding a new fo
 ## constraint-drop
 
 CONSTRAINT-DROP removes an existing foreign-key constraint.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -573,6 +600,8 @@ CONSTRAINT-DROP removes an existing foreign-key constraint.
 ## criteria
 
 CRITERIA is a set of rules (criterion) which can be combined to create conditions and clauses which filter SQL datasets.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -776,6 +805,8 @@ CRITERIA is a set of rules (criterion) which can be combined to create condition
 
 CRITERION-AND is a criterion which represents a condition which joins the CRITERIA provided using the "AND" operator.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -801,6 +832,8 @@ CRITERION-AND is a criterion which represents a condition which joins the CRITER
 ## criterion-between
 
 CRITERION-BETWEEN is a criterion which requires the first EXPRESSION to exist within the range that exists between the second and third EXPRESSION.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -879,6 +912,8 @@ CRITERION-BETWEEN is a criterion which requires the first EXPRESSION to exist wi
 
 CRITERION-EQ is a criterion which represents an "equal" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -895,6 +930,8 @@ CRITERION-EQ is a criterion which represents an "equal" comparison operation.
 ## criterion-glob
 
 CRITERION-GLOB is a criterion which represents a "glob" comparison operation.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -913,6 +950,8 @@ CRITERION-GLOB is a criterion which represents a "glob" comparison operation.
 
 CRITERION-GT is a criterion which represents a "greater than" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -930,6 +969,8 @@ CRITERION-GT is a criterion which represents a "greater than" comparison operati
 
 CRITERION-GTE is a criterion which represents a "greater than or equal to" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -946,6 +987,8 @@ CRITERION-GTE is a criterion which represents a "greater than or equal to" compa
 ## criterion-in
 
 CRITERION-IN is a criterion which represents an "is included in the set" comparison operation.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -965,6 +1008,8 @@ CRITERION-IN is a criterion which represents an "is included in the set" compari
 
 CRITERION-IS-NULL is a criterion which represents an "is null" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -978,6 +1023,8 @@ CRITERION-IS-NULL is a criterion which represents an "is null" comparison operat
 ## criterion-like
 
 CRITERION-LIKE is a criterion which represents a "like" comparison operation.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -996,6 +1043,8 @@ CRITERION-LIKE is a criterion which represents a "like" comparison operation.
 
 CRITERION-LT is a criterion which represents a "less than" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1012,6 +1061,8 @@ CRITERION-LT is a criterion which represents a "less than" comparison operation.
 ## criterion-lte
 
 CRITERION-LTE is a criterion which represents a "less than or equal to" comparison operation.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1030,6 +1081,8 @@ CRITERION-LTE is a criterion which represents a "less than or equal to" comparis
 
 CRITERION-NE is a criterion which represents a "not equal" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1047,6 +1100,8 @@ CRITERION-NE is a criterion which represents a "not equal" comparison operation.
 
 CRITERION-NOT-NULL is a criterion which represents an "is not null" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1060,6 +1115,8 @@ CRITERION-NOT-NULL is a criterion which represents an "is not null" comparison o
 ## criterion-or
 
 CRITERION-OR is a condition which joins the CRITERIA provided using the "OR" operator.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1090,6 +1147,8 @@ CRITERION-OR is a condition which joins the CRITERIA provided using the "OR" ope
 
 CRITERION-REGEXP is a criterion which represents a "regexp" comparison operation.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1106,6 +1165,8 @@ CRITERION-REGEXP is a criterion which represents a "regexp" comparison operation
 ## database-create
 
 DATABASE-CREATE creates a new database.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1132,6 +1193,8 @@ DATABASE-CREATE creates a new database.
 
 DATABASE-DROP removes an existing database.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1156,6 +1219,8 @@ DATABASE-DROP removes an existing database.
 ## delete
 
 DELETE deletes existing rows from the table.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1194,6 +1259,8 @@ DELETE deletes existing rows from the table.
 ## expression
 
 EXPRESSION represents a valid SQL expression.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1296,6 +1363,8 @@ EXPRESSION represents a valid SQL expression.
 
 FUNCTION is an EXPRESSION which represents a built-in SQL function.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1330,6 +1399,8 @@ FUNCTION is an EXPRESSION which represents a built-in SQL function.
 ## index-create
 
 INDEX-CREATE changes the definition of an existing table by adding a new column index.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1371,6 +1442,8 @@ INDEX-CREATE changes the definition of an existing table by adding a new column 
 
 INDEX-DROP removes an existing new column index.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1407,6 +1480,8 @@ INDEX-DROP removes an existing new column index.
 ## insert
 
 INSERT inserts new rows into a table.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1548,6 +1623,8 @@ INSERT inserts new rows into a table.
 
 LITERAL represents acceptable raw SQL data types.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1594,9 +1671,13 @@ null
 
 QUERY represents a valid SQL statement.
 
+[definitions](#definitions)
+
 ## schema-create
 
 SCHEMA-CREATE enters a new schema into the current database.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1623,6 +1704,8 @@ SCHEMA-CREATE enters a new schema into the current database.
 
 SCHEMA-DROP removes an existing schema from the current database.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1648,6 +1731,8 @@ SCHEMA-DROP removes an existing schema from the current database.
 
 SCHEMA-RENAME renames an existing schema definition.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1664,6 +1749,8 @@ SCHEMA-RENAME renames an existing schema definition.
 ## select
 
 SELECT retrieves rows from zero or more tables.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -1936,6 +2023,8 @@ SELECT retrieves rows from zero or more tables.
 
 TABLE represents a DATABASE table reference.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -1956,6 +2045,8 @@ TABLE represents a DATABASE table reference.
 ## table-create
 
 TABLE-CREATE will create a new, initially empty table in the current database.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -2026,6 +2117,8 @@ TABLE-CREATE will create a new, initially empty table in the current database.
 
 TABLE-DROP removes tables from the database.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -2063,6 +2156,8 @@ TABLE-DROP removes tables from the database.
 
 TABLE-RENAME changes the definition of an existing table.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -2079,6 +2174,8 @@ TABLE-RENAME changes the definition of an existing table.
 ## transaction
 
 TRANSACTION represents a set of valid SQL statements to be executed within a database transaction.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -2157,6 +2254,8 @@ TRANSACTION represents a set of valid SQL statements to be executed within a dat
 
 TYPE represents an acceptable SQL data type string.
 
+[definitions](#definitions)
+
 ### example-1
 
 ```
@@ -2184,6 +2283,8 @@ TYPE represents an acceptable SQL data type string.
 ## unary
 
 UNARY is an EXPRESSION which uses the first EXPRESSION to perform a unary operation.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -2232,6 +2333,8 @@ UNARY is an EXPRESSION which uses the first EXPRESSION to perform a unary operat
 ## update
 
 UPDATE changes the values of the specified columns in all rows that satisfy the condition.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -2293,6 +2396,8 @@ UPDATE changes the values of the specified columns in all rows that satisfy the 
 ## view-create
 
 VIEW-CREATE defines a view of a query.
+
+[definitions](#definitions)
 
 ### example-1
 
@@ -2357,6 +2462,8 @@ VIEW-CREATE defines a view of a query.
 ## view-drop
 
 VIEW-DROP drops an existing view.
+
+[definitions](#definitions)
 
 ### example-1
 

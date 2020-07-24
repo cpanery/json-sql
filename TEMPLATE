@@ -1,11 +1,12 @@
 # JSON-SQL
 
-JSON-SQL is a specification which defines a standard, database-vendor-agnostic
-common SQL statement description (and JSON representation). This is a
-specification aims to be a standards-compliant, e.g. SQL-92, and allow for the
-development of better SQL statement generation, libraries, object-mappers, and
-other tooling. The specification is a valid JSON Schema document which can be
-validated using any JSON Schema validator with support for
+JSON-SQL is a specification which defines a standard for describing SQL
+statements using language-agnostic representations (data structures). This
+specification aims to be standards-compliant, i.e. supporting the full-range of
+SQL-92 expressions, and to enable the development of better (more accurate and
+robust) SQL statement generation, libraries, object-mappers, and other tooling.
+The specification is a valid JSON-Schema document which can be validated using
+any JSON-Schema validator with support for
 _"https://json-schema.org/draft/2019-09/schema"_.
 
 ## Features
@@ -16,16 +17,16 @@ _"https://json-schema.org/draft/2019-09/schema"_.
 - pre-flight sql statement syntax validation
 - common sql coverage (99.999% standards-compliant)
 
-## Demonstration
+**note:** sql parser and generator not included
 
-**Note:** Parser and SQL statement generation not included!
+## Demonstration
 
 This example JSON-SQL data structure:
 
 ```
 {
    "table-create" : {
-      "name" : "removed_users",
+      "name" : "inactive_users",
       "query" : {
          "select" : {
             "columns" : [
@@ -37,6 +38,14 @@ This example JSON-SQL data structure:
                "table" : "users"
             },
             "where" : [
+              {
+                "eq": [
+                  {
+                    "column" : "verified"
+                  },
+                  1
+                ]
+              },
               {
                 "not-null": {
                   "column" : "deleted"
@@ -54,8 +63,8 @@ This example JSON-SQL data structure:
 Could be used to generate this SQL query:
 
 ```
-CREATE TEMPORARY TABLE IF NOT EXISTS removed_users AS (
-  SELECT * FROM users WHERE deleted IS NOT NULL
+CREATE TEMPORARY TABLE IF NOT EXISTS inactive_users AS (
+  SELECT * FROM users WHERE verified = 1 AND deleted IS NOT NULL
 )
 ```
 
