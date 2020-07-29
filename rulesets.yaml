@@ -240,7 +240,7 @@ definitions:
                 type: boolean
               primary:
                 type: boolean
-              sequence:
+              increment:
                 type: boolean
               type:
                 $ref: '#/definitions/type'
@@ -280,7 +280,7 @@ definitions:
             name: id
             nullable: false
             primary: true
-            sequence: true
+            increment: true
             type: integer
           for:
             table: users
@@ -1498,7 +1498,7 @@ definitions:
                   type: boolean
                 primary:
                   type: boolean
-                sequence:
+                increment:
                   type: boolean
                 type:
                   $ref: '#/definitions/type'
@@ -1530,7 +1530,7 @@ definitions:
           columns:
             - name: id
               primary: true
-              sequence: true
+              increment: true
               type: integer
           name: users
       example-2:
@@ -1538,7 +1538,7 @@ definitions:
           columns:
             - name: id
               primary: true
-              sequence: true
+              increment: true
               type: integer
           name: removed_users
           safe: true
