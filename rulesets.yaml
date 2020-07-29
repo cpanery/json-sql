@@ -1717,14 +1717,42 @@ definitions:
       - time-wtz
       - timestamp
       - timestamp-wtz
+      - uuid
     maxLength: 255
     title: type
     type: string
     x-examples:
-      example-1: string
-      example-2: number
-      example-3: integer
-      example-4: integer-big
+      example-1: binary
+      example-2: boolean
+      example-3: char
+      example-4: date
+      example-5: datetime
+      example-6: datetime-wtz
+      example-7: decimal
+      example-8: double
+      example-9: enum
+      example-10: float
+      example-11: integer
+      example-12: integer-big
+      example-13: integer-big-unsigned
+      example-14: integer-medium
+      example-15: integer-medium-unsigned
+      example-16: integer-small
+      example-17: integer-small-unsigned
+      example-18: integer-tiny
+      example-19: integer-tiny-unsigned
+      example-20: integer-unsigned
+      example-21: json
+      example-22: number
+      example-23: string
+      example-24: text
+      example-25: text-long
+      example-26: text-medium
+      example-27: time
+      example-28: time-wtz
+      example-29: timestamp
+      example-30: timestamp-wtz
+      example-31: uuid
     x-tags:
       - reference
   unary:
