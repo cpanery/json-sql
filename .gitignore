@@ -11,8 +11,8 @@
 !TEMPLATE
 !VERSION
 !cpanfile
-!document
 !example
+!release
 !rulesets.yaml
 
 !.editorconfig
