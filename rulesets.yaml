@@ -305,6 +305,8 @@ definitions:
               - new
               - old
             type: object
+          safe:
+            type: boolean
         required:
           - name
           - for
@@ -335,6 +337,14 @@ definitions:
           name:
             new: updated_at
             old: updated
+      example-4:
+        column-rename:
+          for:
+            table: users
+          name:
+            new: updated_at
+            old: updated
+          safe: true
     x-tags:
       - query
   constraint-create:
@@ -1612,6 +1622,8 @@ definitions:
               - new
               - old
             type: object
+          safe:
+            type: boolean
         required:
           - name
         type: object
@@ -1625,6 +1637,12 @@ definitions:
           name:
             new: staff
             old: users
+      example-2:
+        table-rename:
+          name:
+            new: staff
+            old: users
+          safe: true
     x-tags:
       - query
   transaction:
