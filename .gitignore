@@ -11,6 +11,7 @@
 !TEMPLATE
 !VERSION
 !cpanfile
+!cpanfile.dev
 !example
 !release
 !rulesets.yaml

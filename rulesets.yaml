@@ -1180,6 +1180,8 @@ definitions:
       - $ref: '#/definitions/delete'
       - $ref: '#/definitions/column-create'
       - $ref: '#/definitions/column-rename'
+      - $ref: '#/definitions/constraint-create'
+      - $ref: '#/definitions/constraint-drop'
       - $ref: '#/definitions/database-create'
       - $ref: '#/definitions/database-drop'
       - $ref: '#/definitions/schema-create'
