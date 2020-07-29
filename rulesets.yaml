@@ -923,6 +923,7 @@ definitions:
       - $ref: '#/definitions/literal'
       - $ref: '#/definitions/column'
       - $ref: '#/definitions/function'
+      - $ref: '#/definitions/verbatim'
       - $ref: '#/definitions/binding'
       - $ref: '#/definitions/binary'
       - $ref: '#/definitions/unary'
@@ -1848,6 +1849,31 @@ definitions:
                 - 1
     x-tags:
       - query
+  verbatim:
+    description: VERBATIM represents a built-in SQL keyword (and optional arguments).
+    properties:
+      verbatim:
+        items:
+          $ref: '#/definitions/literal'
+        type: array
+    required:
+      - verbatim
+    title: verbatim
+    type: object
+    x-examples:
+      example-1:
+        verbatim:
+          - NULL
+      example-2:
+        verbatim:
+          - NOT NULL
+      example-3:
+        verbatim:
+          - CURRENT_TIMESTAMP
+      example-4:
+        verbatim:
+          - TIMESTAMP
+          - 2000-01-01 00:00:00
   view-create:
     description: VIEW-CREATE defines a view of a query.
     properties:
