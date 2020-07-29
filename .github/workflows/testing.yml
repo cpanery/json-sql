@@ -28,8 +28,9 @@ jobs:
     - name: Install Project Dependencies
       run: sudo cpanm -qn --reinstall --installdeps .
     - name: Critiquing Project
-      run: perlcritic lib t
+      run: perlcritic t
     - name: Testing Project
-      run: prove -Ilib -r t
+      run: prove -v t
       env:
         HARNESS_OPTIONS: j9
+        TEST_DEBUG: 1
