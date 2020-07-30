@@ -348,6 +348,22 @@ definitions:
         type: enum
     x-tags:
       - reference
+  column-drop:
+    title: column-drop
+    type: object
+    description: COLUMN-DROP removes an existing column from an existing table.
+    properties:
+      column-drop:
+        allOf:
+          - $ref: '#/definitions/table'
+          - $ref: '#/definitions/column'
+    required:
+      - column-drop
+    x-examples:
+      example-1:
+        column-drop:
+          table: users
+          column: phone
   column-rename:
     description: COLUMN-RENAME changes the definition of an existing table by renaming a new column.
     properties:
@@ -1255,6 +1271,7 @@ definitions:
       - $ref: '#/definitions/delete'
       - $ref: '#/definitions/column-create'
       - $ref: '#/definitions/column-rename'
+      - $ref: '#/definitions/column-drop'
       - $ref: '#/definitions/constraint-create'
       - $ref: '#/definitions/constraint-drop'
       - $ref: '#/definitions/database-create'
