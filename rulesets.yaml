@@ -2051,6 +2051,26 @@ definitions:
             - eq:
                 - column: id
                 - 1
+      example-3:
+        update:
+          columns:
+            - column: login
+              value: admin
+            - column: password
+              value: secret
+          for:
+            table: users
+          where:
+            - eq:
+                - column: id
+                - subquery:
+                    select:
+                      columns:
+                        - func:
+                          - min
+                          - column: id
+                      from:
+                        table: users
     x-tags:
       - query
   verbatim:
