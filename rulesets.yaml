@@ -1477,7 +1477,11 @@ definitions:
               $ref: '#/definitions/expression'
             type: array
           from:
-            $ref: '#/definitions/table'
+            oneOf:
+              - $ref: '#/definitions/table'
+              - type: array
+                items:
+                  $ref: '#/definitions/table'
           group-by:
             items:
               $ref: '#/definitions/expression'
@@ -1552,6 +1556,24 @@ definitions:
           rows:
             limit: 10
             offset: 10
+      example-11:
+        select:
+          columns:
+            - column: '*'
+              alias: s
+            - column: '*'
+              alias: u
+          from:
+            - table: staff
+              alias: s
+            - table: users
+              alias: u
+          where:
+            - eq:
+                - column: user_id
+                  alias: s
+                - column: id
+                  alias: u
       example-2:
         select:
           columns:
