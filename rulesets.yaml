@@ -230,29 +230,12 @@ definitions:
       column-create:
         properties:
           column:
-            properties:
-              default:
-                $ref: '#/definitions/literal'
-              name:
-                maxLength: 255
-                type: string
-              nullable:
-                type: boolean
-              primary:
-                type: boolean
-              increment:
-                type: boolean
-              type:
-                $ref: '#/definitions/type'
-            required:
-              - name
-              - type
-            type: object
+            $ref: '#/definitions/column-definition'
           for:
             $ref: '#/definitions/table'
         required:
-          - for
           - column
+          - for
         type: object
     required:
       - column-create
@@ -277,15 +260,64 @@ definitions:
       example-3:
         column-create:
           column:
+            increment: true
             name: id
             nullable: false
             primary: true
-            increment: true
             type: integer
           for:
             table: users
     x-tags:
       - query
+  column-definition:
+    description: COLUMN-DEFINITION represents a table column definition.
+    properties:
+      default:
+        $ref: '#/definitions/literal'
+      increment:
+        type: boolean
+      name:
+        maxLength: 255
+        type: string
+      nullable:
+        type: boolean
+      options:
+        items:
+          $ref: '#/definitions/literal'
+        type: array
+      primary:
+        type: boolean
+      type:
+        $ref: '#/definitions/type'
+    required:
+      - name
+      - type
+    title: column-definition
+    type: object
+    x-examples:
+      example-1:
+        name: id
+        type: number
+      example-2:
+        increment: true
+        name: id
+        primary: true
+        type: integer
+      example-3:
+        name: fullname
+        nullable: false
+        type: string
+      example-4:
+        default: guest
+        name: role
+        type: string
+      example-5:
+        default: dark
+        name: theme
+        options:
+          - light
+          - dark
+        type: enum
   column-rename:
     description: COLUMN-RENAME changes the definition of an existing table by renaming a new column.
     properties:
@@ -1499,24 +1531,7 @@ definitions:
         properties:
           columns:
             items:
-              properties:
-                default:
-                  $ref: '#/definitions/literal'
-                name:
-                  maxLength: 255
-                  type: string
-                nullable:
-                  type: boolean
-                primary:
-                  type: boolean
-                increment:
-                  type: boolean
-                type:
-                  $ref: '#/definitions/type'
-              required:
-                - name
-                - type
-              type: object
+              $ref: '#/definitions/column-definition'
             minItems: 1
             type: array
           name:
@@ -1539,17 +1554,17 @@ definitions:
       example-1:
         table-create:
           columns:
-            - name: id
+            - increment: true
+              name: id
               primary: true
-              increment: true
               type: integer
           name: users
       example-2:
         table-create:
           columns:
-            - name: id
+            - increment: true
+              name: id
               primary: true
-              increment: true
               type: integer
           name: removed_users
           safe: true
