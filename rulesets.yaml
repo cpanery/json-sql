@@ -3,18 +3,18 @@ $id: https://raw.githubusercontent.com/iamalnewkirk/json-sql/master/rulesets.yam
 $schema: https://json-schema.org/draft/2019-09/schema
 definitions:
   as:
-    title: as
     description: 'AS is an EXPRESSION which declares an alias for another EXPRESSION, typically in a column SELECT definition.'
-    type: object
     properties:
       as:
-        type: array
-        minItems: 2
-        maxItems: 2
         items:
           $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
     required:
       - as
+    title: as
+    type: object
     x-examples:
       example-1:
         as:
@@ -28,6 +28,8 @@ definitions:
         as:
           - ssn
           - column: social_security_number
+    x-tags:
+      - expression
   binary:
     description: BINARY is an EXPRESSION which uses the first and second EXPRESSION to perform a binary operation.
     properties:
@@ -344,6 +346,8 @@ definitions:
           - light
           - dark
         type: enum
+    x-tags:
+      - reference
   column-rename:
     description: COLUMN-RENAME changes the definition of an existing table by renaming a new column.
     properties:
@@ -998,6 +1002,7 @@ definitions:
       - $ref: '#/definitions/cast'
       - $ref: '#/definitions/case'
       - $ref: '#/definitions/as'
+      - $ref: '#/definitions/subquery'
     title: expression
     x-examples:
       example-1: 123
@@ -1527,6 +1532,34 @@ definitions:
             limit: 10
     x-tags:
       - query
+  subquery:
+    description: SUBQUERY represents a SELECT (SQL select statement) as an EXPRESSION.
+    properties:
+      subquery:
+        $ref: '#/definitions/select'
+    required:
+      - subquery
+    title: subquery
+    type: object
+    x-examples:
+      example-1:
+        subquery:
+          select:
+            columns:
+              - column: id
+            from:
+              table: users
+      example-2:
+        subquery:
+          select:
+            columns:
+              - func:
+                  - count
+                  - column: id
+            from:
+              table: users
+    x-tags:
+      - query
   table:
     description: TABLE represents a DATABASE table reference.
     properties:
@@ -1934,6 +1967,8 @@ definitions:
         verbatim:
           - TIMESTAMP
           - 2000-01-01 00:00:00
+    x-tags:
+      - expression
   view-create:
     description: VIEW-CREATE defines a view of a query.
     properties:
