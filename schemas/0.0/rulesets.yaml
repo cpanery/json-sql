@@ -1,70 +1,88 @@
 ---
-
-$id: "https://raw.githubusercontent.com/iamalnewkirk/json-sql/master/rulesets.yaml"
-$schema: "https://json-schema.org/draft/2019-09/schema"
-
-oneOf:
-  - $ref: '#/definitions/query'
-  - $ref: '#/definitions/transaction'
-
+$id: https://raw.githubusercontent.com/iamalnewkirk/json-sql/master/rulesets.yaml
+$schema: https://json-schema.org/draft/2019-09/schema
 definitions:
-  literal:
-    title: literal
-    type:
-      - string
-      - number
-      - integer
-      - boolean
-      - 'null'
-    x-examples:
-      example-1: secret
-      example-2: 12345
-      example-3: 1.2345
-      example-4: -12345
-      example-5: false
-      example-6: true
-      example-7: null
-    description: LITERAL represents acceptable raw SQL data types.
-    x-tags:
-      - expression
-  binding:
-    title: binding
+  as:
+    description: 'AS is an EXPRESSION which declares an alias for another EXPRESSION, typically in a column SELECT definition.'
+    properties:
+      as:
+        items:
+          $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
+    required:
+      - as
+    title: as
     type: object
     x-examples:
       example-1:
-        bind: token
+        as:
+          - active
+          - 1
       example-2:
-        bind: uuid
-    properties:
-      bind:
-        type: string
-        maxLength: 255
-    required:
-      - bind
-    description: BINDING is an EXPRESSION which represents is a named-placeholder to be substituted later.
+        as:
+          - inactive
+          - 0
+      example-3:
+        as:
+          - ssn
+          - column: social_security_number
     x-tags:
       - expression
-  column:
-    title: column
-    type: object
-    x-examples:
-      example-1:
-        column: id
-      example-2:
-        column: created
-    properties:
-      column:
-        type: string
-        maxLength: 255
-      alias:
-        type: string
-        maxLength: 255
-    required:
-      - column
-    description: COLUMN represents TABLE column reference.
-    x-tags:
-      - reference
   binary:
+    description: BINARY is an EXPRESSION which uses the first and second EXPRESSION to perform a binary operation.
+    properties:
+      binary:
+        oneOf:
+          - properties:
+              plus:
+                items:
+                  $ref: '#/definitions/expression'
+                maxItems: 2
+                minItems: 2
+                type: array
+            required:
+              - plus
+          - properties:
+              minus:
+                items:
+                  $ref: '#/definitions/expression'
+                maxItems: 2
+                minItems: 2
+                type: array
+            required:
+              - minus
+          - properties:
+              multiply:
+                items:
+                  $ref: '#/definitions/expression'
+                maxItems: 2
+                minItems: 2
+                type: array
+            required:
+              - multiply
+          - properties:
+              divide:
+                items:
+                  $ref: '#/definitions/expression'
+                maxItems: 2
+                minItems: 2
+                type: array
+            required:
+              - divide
+          - properties:
+              modulo:
+                items:
+                  $ref: '#/definitions/expression'
+                maxItems: 2
+                minItems: 2
+                type: array
+            required:
+              - modulo
+        type: object
+    required:
+      - binary
     title: binary
     type: object
     x-examples:
@@ -103,171 +121,458 @@ definitions:
           modulo:
             - 29
             - 9
-    description: BINARY is an EXPRESSION which uses the first and second EXPRESSION to perform a binary operation.
     x-tags:
       - expression
+  binding:
+    description: BINDING is an EXPRESSION which represents is a named-placeholder to be substituted later.
     properties:
-      binary:
-        oneOf:
-          - properties:
-              plus:
-                type: array
-                minItems: 2
-                maxItems: 2
-                items:
-                  $ref: '#/definitions/expression'
-            required:
-              - plus
-          - properties:
-              minus:
-                type: array
-                minItems: 2
-                maxItems: 2
-                items:
-                  $ref: '#/definitions/expression'
-            required:
-              - minus
-          - properties:
-              multiply:
-                type: array
-                minItems: 2
-                maxItems: 2
-                items:
-                  $ref: '#/definitions/expression'
-            required:
-              - multiply
-          - properties:
-              divide:
-                type: array
-                minItems: 2
-                maxItems: 2
-                items:
-                  $ref: '#/definitions/expression'
-            required:
-              - divide
-          - properties:
-              modulo:
-                type: array
-                minItems: 2
-                maxItems: 2
-                items:
-                  $ref: '#/definitions/expression'
-            required:
-              - modulo
-        type: object
+      bind:
+        maxLength: 255
+        type: string
     required:
-      - binary
-  unary:
-    title: unary
+      - bind
+    title: binding
     type: object
-    properties:
-      unary:
-        oneOf:
-          - properties:
-              plus:
-                $ref: '#/definitions/expression'
-            required:
-              - plus
-          - properties:
-              minus:
-                $ref: '#/definitions/expression'
-            required:
-              - minus
-        type: object
-    required:
-      - unary
     x-examples:
       example-1:
-        unary:
-          plus: 1000
+        bind: token
       example-2:
-        unary:
-          plus:
-            column: amount
-      example-3:
-        unary:
-          minus: 1000
-      example-4:
-        unary:
-          minus:
-            column: amount
-    description: UNARY is an EXPRESSION which uses the first EXPRESSION to perform a unary operation.
+        bind: uuid
     x-tags:
       - expression
-  function:
-    title: function
-    type: object
+  case:
+    description: CASE is an EXPRESSION which provides a mechanism for declaring conditional expressions.
     properties:
-      func:
-        type: array
-        minItems: 1
-        items:
-          $ref: '#/definitions/expression'
+      case:
+        properties:
+          else:
+            $ref: '#/definitions/expression'
+          when:
+            items:
+              properties:
+                cond:
+                  oneOf:
+                    - $ref: '#/definitions/criteria'
+                    - $ref: '#/definitions/expression'
+                then:
+                  $ref: '#/definitions/expression'
+              type: object
+            minItems: 1
+            type: array
+        required:
+          - when
+          - else
+        type: object
     required:
-      - func
+      - case
+    title: case
+    type: object
     x-examples:
       example-1:
-        func:
-          - 'true'
-      example-2:
-        func:
-          - 'false'
-      example-3:
-        func:
-          - date
-          - now
-    description: FUNCTION is an EXPRESSION which represents a built-in SQL function.
-    x-tags:
-      - expression
-  expression:
-    oneOf:
-      - $ref: '#/definitions/literal'
-      - $ref: '#/definitions/column'
-      - $ref: '#/definitions/function'
-      - $ref: '#/definitions/binding'
-      - $ref: '#/definitions/binary'
-      - $ref: '#/definitions/unary'
-      - $ref: '#/definitions/cast'
-      - $ref: '#/definitions/case'
-    title: expression
-    x-examples:
-      example-1: 123
-      example-2:
-        column: id
-      example-3:
-        func:
-          - 'true'
-      example-4:
-        func:
-          - 'false'
-      example-5:
-        bind: login
-      example-6:
-        binary:
-          plus:
-            - 1
-            - 1
-      example-7:
-        unary:
-          plus: 1
-      example-8:
-        cast:
-          - 12.34
-          - int
-      example-9:
         case:
+          else: user
           when:
             - cond:
                 eq:
-                  - 1
-                  - 1
-              then: 1
+                  - admin
+                  - admin
+              then: admin
+      example-2:
+        case:
           else: 0
-    description: EXPRESSION represents a valid SQL expression.
+          when:
+            - cond:
+                eq:
+                  - column: role
+                  - admin
+              then: 1
+      example-3:
+        case:
+          else: 0
+          when:
+            - cond:
+                eq:
+                  - column: role
+                  - admin
+              then: 1
+            - cond:
+                eq:
+                  - column: role
+                  - manager
+              then: 2
     x-tags:
       - expression
+  cast:
+    description: CAST is an EXPRESSION which specifies a conversion from one data type to another.
+    properties:
+      cast:
+        items:
+          $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
+    required:
+      - cast
+    title: cast
+    type: object
+    x-examples:
+      example-1:
+        cast:
+          - 12.34
+          - int
+      example-2:
+        cast:
+          - 2020-01-01
+          - datetime
+      example-3:
+        cast:
+          - func:
+              - date
+              - now
+          - varchar
+    x-tags:
+      - expression
+  column:
+    description: COLUMN represents TABLE column reference.
+    properties:
+      alias:
+        maxLength: 255
+        type: string
+      column:
+        maxLength: 255
+        type: string
+    required:
+      - column
+    title: column
+    type: object
+    x-examples:
+      example-1:
+        column: id
+      example-2:
+        column: created
+    x-tags:
+      - reference
+  column-change:
+    description: COLUMN-CHANGE changes the definition of an existing table and column.
+    properties:
+      column-change:
+        properties:
+          column:
+            $ref: '#/definitions/column-definition'
+          for:
+            $ref: '#/definitions/table'
+        required:
+          - for
+          - column
+        type: object
+    required:
+      - column-change
+    title: column-change
+    type: object
+    x-examples:
+      example-1:
+        column-change:
+          column:
+            name: login_attempts
+            nullable: false
+            type: integer-big
+          for:
+            table: users
+      example-2:
+        column-change:
+          column:
+            default:
+              verbatim:
+                - CURRENT_TIMESTAMP
+            name: last_login_at
+            type: timestamp
+          for:
+            table: users
+  column-create:
+    description: COLUMN-CREATE changes the definition of an existing table by adding a new column.
+    properties:
+      column-create:
+        properties:
+          column:
+            $ref: '#/definitions/column-definition'
+          for:
+            $ref: '#/definitions/table'
+          safe:
+            type: boolean
+        required:
+          - column
+          - for
+        type: object
+    required:
+      - column-create
+    title: column-create
+    type: object
+    x-examples:
+      example-1:
+        column-create:
+          column:
+            name: email
+            type: string
+          for:
+            table: users
+      example-2:
+        column-create:
+          column:
+            name: verified
+            nullable: true
+            type: date
+          for:
+            table: users
+      example-3:
+        column-create:
+          column:
+            increment: true
+            name: id
+            nullable: false
+            primary: true
+            type: integer
+          for:
+            table: users
+    x-tags:
+      - query
+  column-definition:
+    description: COLUMN-DEFINITION represents a table column definition.
+    properties:
+      default:
+        oneOf:
+          - $ref: '#/definitions/literal'
+          - $ref: '#/definitions/function'
+          - $ref: '#/definitions/verbatim'
+      increment:
+        type: boolean
+      name:
+        maxLength: 255
+        type: string
+      nullable:
+        type: boolean
+      options:
+        items:
+          $ref: '#/definitions/literal'
+        type: array
+      primary:
+        type: boolean
+      type:
+        $ref: '#/definitions/type'
+    required:
+      - name
+      - type
+    title: column-definition
+    type: object
+    x-examples:
+      example-1:
+        name: id
+        type: number
+      example-2:
+        increment: true
+        name: id
+        primary: true
+        type: integer
+      example-3:
+        name: fullname
+        nullable: false
+        type: string
+      example-4:
+        default: guest
+        name: role
+        type: string
+      example-5:
+        default: dark
+        name: theme
+        options:
+          - light
+          - dark
+        type: enum
+    x-tags:
+      - reference
+  column-drop:
+    description: COLUMN-DROP removes an existing column from an existing table.
+    properties:
+      column-drop:
+        allOf:
+          - $ref: '#/definitions/table'
+          - $ref: '#/definitions/column'
+          - properties:
+              safe:
+                type: boolean
+            type: object
+    required:
+      - column-drop
+    title: column-drop
+    type: object
+    x-examples:
+      example-1:
+        column-drop:
+          column: phone
+          table: users
+  column-rename:
+    description: COLUMN-RENAME changes the definition of an existing table by renaming a new column.
+    properties:
+      column-rename:
+        properties:
+          for:
+            $ref: '#/definitions/table'
+          name:
+            properties:
+              new:
+                maxLength: 255
+                type: string
+              old:
+                maxLength: 255
+                type: string
+            required:
+              - new
+              - old
+            type: object
+          safe:
+            type: boolean
+        required:
+          - name
+          - for
+        type: object
+    required:
+      - column-rename
+    title: column-rename
+    type: object
+    x-examples:
+      example-1:
+        column-rename:
+          for:
+            table: users
+          name:
+            new: email_address
+            old: email
+      example-2:
+        column-rename:
+          for:
+            table: users
+          name:
+            new: created_at
+            old: created
+      example-3:
+        column-rename:
+          for:
+            table: users
+          name:
+            new: updated_at
+            old: updated
+      example-4:
+        column-rename:
+          for:
+            table: users
+          name:
+            new: updated_at
+            old: updated
+          safe: true
+    x-tags:
+      - query
+  constraint-create:
+    description: CONSTRAINT-CREATE changes the definition of an existing table by adding a new foreign-key constraint.
+    properties:
+      constraint-create:
+        properties:
+          name:
+            maxLength: 255
+            type: string
+          safe:
+            type: boolean
+          source:
+            allOf:
+              - $ref: '#/definitions/table'
+              - $ref: '#/definitions/column'
+          target:
+            allOf:
+              - $ref: '#/definitions/table'
+              - $ref: '#/definitions/column'
+        required:
+          - source
+          - target
+        type: object
+    required:
+      - constraint-create
+    title: constraint-create
+    type: object
+    x-examples:
+      example-1:
+        constraint-create:
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+      example-2:
+        constraint-create:
+          name: fkey_users_profile_id
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+    x-tags:
+      - query
+  constraint-drop:
+    description: CONSTRAINT-DROP removes an existing foreign-key constraint.
+    properties:
+      constraint-drop:
+        anyOf:
+          - properties:
+              name:
+                maxLength: 255
+                type: string
+            required:
+              - name
+            safe:
+              type: boolean
+            type: object
+          - properties:
+              safe:
+                type: boolean
+              source:
+                allOf:
+                  - $ref: '#/definitions/table'
+                  - $ref: '#/definitions/column'
+              target:
+                allOf:
+                  - $ref: '#/definitions/table'
+                  - $ref: '#/definitions/column'
+            required:
+              - source
+              - target
+            type: object
+    required:
+      - constraint-drop
+    title: constraint-drop
+    type: object
+    x-examples:
+      example-1:
+        constraint-drop:
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+      example-2:
+        constraint-drop:
+          name: fkey_users_profile_id
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+      example-3:
+        constraint-drop:
+          name: fkey_users_profile_id
+    x-tags:
+      - query
   criteria:
-    title: criteria
     description: CRITERIA is a set of rules (criterion) which can be combined to create conditions and clauses which filter SQL datasets.
     oneOf:
       - $ref: '#/definitions/criterion-in'
@@ -284,12 +589,40 @@ definitions:
       - $ref: '#/definitions/criterion-regexp'
       - $ref: '#/definitions/criterion-and'
       - $ref: '#/definitions/criterion-or'
+    title: criteria
     x-examples:
       example-1:
         in:
           - column: theme
           - light
           - dark
+      example-10:
+        lt:
+          - column: total
+          - 1.23
+      example-11:
+        ne:
+          - column: status
+          - unknown
+      example-12:
+        regexp:
+          - column: username
+          - '^admin$'
+      example-13:
+        and:
+          - eq:
+              - column: role
+              - guest
+          - not-null:
+              column: verified
+      example-14:
+        or:
+          - eq:
+              - column: role
+              - guest
+          - eq:
+              - column: role
+              - user
       example-2:
         is-null:
           column: deleted
@@ -320,77 +653,42 @@ definitions:
         lte:
           - column: total
           - 1.23
-      example-10:
-        lt:
-          - column: total
-          - 1.23
-      example-11:
-        ne:
-          - column: status
-          - unknown
-      example-12:
-        regexp:
-          - column: username
-          - ^admin$
-      example-13:
+    x-tags:
+      - criteria
+  criterion-and:
+    description: CRITERION-AND is a criterion which represents a condition which joins the CRITERIA provided using the "AND" operator.
+    properties:
+      and:
+        items:
+          $ref: '#/definitions/criteria'
+        type: array
+    required:
+      - and
+    title: criterion-and
+    type: object
+    x-examples:
+      example-1:
         and:
           - eq:
               - column: role
               - guest
           - not-null:
               column: verified
-      example-14:
-        or:
-          - eq:
-              - column: role
-              - guest
-          - eq:
-              - column: role
-              - user
     x-tags:
       - criteria
-  cast:
-    title: cast
-    type: object
-    properties:
-      cast:
-        type: array
-        minItems: 2
-        maxItems: 2
-        items:
-          $ref: '#/definitions/expression'
-    required:
-      - cast
-    x-examples:
-      example-1:
-        cast:
-          - 12.34
-          - int
-      example-2:
-        cast:
-          - '2020-01-01'
-          - datetime
-      example-3:
-        cast:
-          - func:
-              - date
-              - now
-          - varchar
-    description: CAST is an EXPRESSION which specifies a conversion from one data type to another.
-    x-tags:
-      - expression
   criterion-between:
-    title: criterion-between
-    type: object
+    description: CRITERION-BETWEEN is a criterion which requires the first EXPRESSION to exist within the range that exists between the second and third EXPRESSION.
     properties:
       between:
-        type: array
-        minItems: 2
-        maxItems: 2
         items:
           $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
     required:
       - between
+    title: criterion-between
+    type: object
     x-examples:
       example-1:
         between:
@@ -417,83 +715,100 @@ definitions:
           - func:
               - date
               - now
-    description: CRITERION-BETWEEN is a criterion which requires the first EXPRESSION to exist within the range that exists between the second and third EXPRESSION.
     x-tags:
       - criteria
-  case:
-    title: case
-    type: object
+  criterion-eq:
+    description: CRITERION-EQ is a criterion which represents an "equal" comparison operation.
     properties:
-      case:
-        type: object
-        required:
-          - when
-          - else
-        properties:
-          when:
-            type: array
-            minItems: 1
-            items:
-              type: object
-              properties:
-                cond:
-                  oneOf:
-                    - $ref: '#/definitions/criteria'
-                    - $ref: '#/definitions/expression'
-                then:
-                  $ref: '#/definitions/expression'
-          else:
-            $ref: '#/definitions/expression'
-    required:
-      - case
-    x-examples:
-      example-1:
-        case:
-          when:
-            - cond:
-                eq:
-                  - admin
-                  - admin
-              then: admin
-          else: user
-      example-2:
-        case:
-          when:
-            - cond:
-                eq:
-                  - column: role
-                  - admin
-              then: 1
-          else: 0
-      example-3:
-        case:
-          when:
-            - cond:
-                eq:
-                  - column: role
-                  - admin
-              then: 1
-            - cond:
-                eq:
-                  - column: role
-                  - manager
-              then: 2
-          else: 0
-    description: CASE is an EXPRESSION which provides a mechanism for declaring conditional expressions.
-    x-tags:
-      - expression
-  criterion-in:
-    title: criterion-in
-    type: object
-    description: 'CRITERION-IN is a criterion which represents an "is included in the set" comparison operation.'
-    properties:
-      in:
-        type: array
-        minItems: 2
+      eq:
         items:
           $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
+    required:
+      - eq
+    title: criterion-eq
+    type: object
+    x-examples:
+      example-1:
+        eq:
+          - column: role
+          - admin
+    x-tags:
+      - criteria
+  criterion-glob:
+    description: CRITERION-GLOB is a criterion which represents a "glob" comparison operation.
+    properties:
+      glob:
+        items:
+          $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
+    required:
+      - glob
+    title: criterion-glob
+    type: object
+    x-examples:
+      example-1:
+        glob:
+          - column: filename
+          - '*.txt'
+    x-tags:
+      - criteria
+  criterion-gt:
+    description: CRITERION-GT is a criterion which represents a "greater than" comparison operation.
+    properties:
+      gt:
+        items:
+          $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
+    required:
+      - gt
+    title: criterion-gt
+    type: object
+    x-examples:
+      example-1:
+        gt:
+          - column: total
+          - 1.23
+    x-tags:
+      - criteria
+  criterion-gte:
+    description: CRITERION-GTE is a criterion which represents a "greater than or equal to" comparison operation.
+    properties:
+      gte:
+        items:
+          $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
+    required:
+      - gte
+    title: criterion-gte
+    type: object
+    x-examples:
+      example-1:
+        gte:
+          - column: total
+          - 1.23
+    x-tags:
+      - criteria
+  criterion-in:
+    description: CRITERION-IN is a criterion which represents an "is included in the set" comparison operation.
+    properties:
+      in:
+        items:
+          $ref: '#/definitions/expression'
+        minItems: 2
+        type: array
     required:
       - in
+    title: criterion-in
+    type: object
     x-examples:
       example-1:
         in:
@@ -503,574 +818,229 @@ definitions:
     x-tags:
       - criteria
   criterion-is-null:
-    title: criterion-is-null
-    type: object
+    description: CRITERION-IS-NULL is a criterion which represents an "is null" comparison operation.
     properties:
       is-null:
         $ref: '#/definitions/expression'
     required:
       - is-null
+    title: criterion-is-null
+    type: object
     x-examples:
       example-1:
         is-null:
           column: deleted
-    description: 'CRITERION-IS-NULL is a criterion which represents an "is null" comparison operation.'
-    x-tags:
-      - criteria
-  criterion-not-null:
-    title: criterion-not-null
-    type: object
-    properties:
-      not-null:
-        $ref: '#/definitions/expression'
-    required:
-      - not-null
-    x-examples:
-      example-1:
-        not-null:
-          column: deleted
-    description: 'CRITERION-NOT-NULL is a criterion which represents an "is not null" comparison operation.'
-    x-tags:
-      - criteria
-  criterion-eq:
-    title: criterion-eq
-    type: object
-    properties:
-      eq:
-        type: array
-        minItems: 2
-        maxItems: 2
-        items:
-          $ref: '#/definitions/expression'
-    required:
-      - eq
-    x-examples:
-      example-1:
-        eq:
-          - column: role
-          - admin
-    description: 'CRITERION-EQ is a criterion which represents an "equal" comparison operation.'
-    x-tags:
-      - criteria
-  criterion-glob:
-    title: criterion-glob
-    type: object
-    properties:
-      glob:
-        type: array
-        minItems: 2
-        maxItems: 2
-        items:
-          $ref: '#/definitions/expression'
-    required:
-      - glob
-    x-examples:
-      example-1:
-        glob:
-          - column: filename
-          - '*.txt'
-    description: 'CRITERION-GLOB is a criterion which represents a "glob" comparison operation.'
-    x-tags:
-      - criteria
-  criterion-gt:
-    title: criterion-gt
-    type: object
-    properties:
-      gt:
-        type: array
-        minItems: 2
-        maxItems: 2
-        items:
-          $ref: '#/definitions/expression'
-    required:
-      - gt
-    x-examples:
-      example-1:
-        gt:
-          - column: total
-          - 1.23
-    description: 'CRITERION-GT is a criterion which represents a "greater than" comparison operation.'
-    x-tags:
-      - criteria
-  criterion-gte:
-    title: criterion-gte
-    type: object
-    properties:
-      gte:
-        type: array
-        minItems: 2
-        maxItems: 2
-        items:
-          $ref: '#/definitions/expression'
-    required:
-      - gte
-    x-examples:
-      example-1:
-        gte:
-          - column: total
-          - 1.23
-    description: 'CRITERION-GTE is a criterion which represents a "greater than or equal to" comparison operation.'
     x-tags:
       - criteria
   criterion-like:
-    title: criterion-like
-    type: object
+    description: CRITERION-LIKE is a criterion which represents a "like" comparison operation.
     properties:
       like:
-        type: array
-        minItems: 2
-        maxItems: 2
         items:
           $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
     required:
       - like
+    title: criterion-like
+    type: object
     x-examples:
       example-1:
         like:
           - column: email
           - '%@example.com'
-    description: 'CRITERION-LIKE is a criterion which represents a "like" comparison operation.'
-    x-tags:
-      - criteria
-  criterion-lte:
-    title: criterion-lte
-    type: object
-    properties:
-      lte:
-        type: array
-        minItems: 2
-        maxItems: 2
-        items:
-          $ref: '#/definitions/expression'
-    required:
-      - lte
-    x-examples:
-      example-1:
-        lte:
-          - column: total
-          - 1.23
-    description: 'CRITERION-LTE is a criterion which represents a "less than or equal to" comparison operation.'
     x-tags:
       - criteria
   criterion-lt:
-    title: criterion-lt
-    type: object
+    description: CRITERION-LT is a criterion which represents a "less than" comparison operation.
     properties:
       lt:
-        type: array
-        minItems: 2
-        maxItems: 2
         items:
           $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
     required:
       - lt
+    title: criterion-lt
+    type: object
     x-examples:
       example-1:
         lt:
           - column: total
           - 1.23
-    description: 'CRITERION-LT is a criterion which represents a "less than" comparison operation.'
+    x-tags:
+      - criteria
+  criterion-lte:
+    description: CRITERION-LTE is a criterion which represents a "less than or equal to" comparison operation.
+    properties:
+      lte:
+        items:
+          $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
+    required:
+      - lte
+    title: criterion-lte
+    type: object
+    x-examples:
+      example-1:
+        lte:
+          - column: total
+          - 1.23
     x-tags:
       - criteria
   criterion-ne:
-    title: criterion-ne
-    type: object
+    description: CRITERION-NE is a criterion which represents a "not equal" comparison operation.
     properties:
       ne:
-        type: array
-        minItems: 2
-        maxItems: 2
         items:
           $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
     required:
       - ne
+    title: criterion-ne
+    type: object
     x-examples:
       example-1:
         ne:
           - column: status
           - unknown
-    description: 'CRITERION-NE is a criterion which represents a "not equal" comparison operation.'
+    x-tags:
+      - criteria
+  criterion-not-null:
+    description: CRITERION-NOT-NULL is a criterion which represents an "is not null" comparison operation.
+    properties:
+      not-null:
+        $ref: '#/definitions/expression'
+    required:
+      - not-null
+    title: criterion-not-null
+    type: object
+    x-examples:
+      example-1:
+        not-null:
+          column: deleted
+    x-tags:
+      - criteria
+  criterion-or:
+    description: CRITERION-OR is a condition which joins the CRITERIA provided using the "OR" operator.
+    properties:
+      or:
+        items:
+          $ref: '#/definitions/criteria'
+        type: array
+    required:
+      - or
+    title: criterion-or
+    type: object
+    x-examples:
+      example-1:
+        or:
+          - eq:
+              - column: role
+              - guest
+          - eq:
+              - column: role
+              - user
     x-tags:
       - criteria
   criterion-regexp:
-    title: criterion-regexp
-    type: object
+    description: CRITERION-REGEXP is a criterion which represents a "regexp" comparison operation.
     properties:
       regexp:
-        type: array
-        minItems: 2
-        maxItems: 2
         items:
           $ref: '#/definitions/expression'
+        maxItems: 2
+        minItems: 2
+        type: array
     required:
       - regexp
+    title: criterion-regexp
+    type: object
     x-examples:
       example-1:
         regexp:
           - column: username
-          - ^admin$
-    description: 'CRITERION-REGEXP is a criterion which represents a "regexp" comparison operation.'
+          - '^admin$'
     x-tags:
       - criteria
-  select:
-    type: object
-    title: select
-    x-examples:
-      example-1:
-        select:
-          from:
-            table: users
-          columns:
-            - column: '*'
-      example-2:
-        select:
-          from:
-            table: users
-          columns:
-            - column: id
-            - column: login
-      example-3:
-        select:
-          from:
-            table: users
-          columns:
-            - column: '*'
-          where:
-            - not-null:
-                column: verified
-      example-4:
-        select:
-          from:
-            table: users
-            alias: u
-          columns:
-            - column: '*'
-          joins:
-            - with:
-                table: profiles
-                alias: p
-              having:
-                - eq:
-                  - column: id
-                    alias: p
-                  - column: profile_id
-                    alias: u
-      example-5:
-        select:
-          from:
-            table: users
-          columns:
-            - func:
-                - count
-                - column: id
-            - column: country
-          group-by:
-            - column: country
-      example-6:
-        select:
-          from:
-            table: users
-          columns:
-            - func:
-                - count
-                - column: id
-            - column: country
-          group-by:
-            - column: country
-          having:
-            - gt:
-                - func:
-                    - count
-                    - column: id
-                - 5
-      example-7:
-        select:
-          from:
-            table: users
-          columns:
-            - column: '*'
-          order-by:
-            - column: id
-              sort: desc
-      example-8:
-        select:
-          from:
-            table: users
-          columns:
-            - column: '*'
-          order-by:
-            - column: id
-              sort: desc
-            - column: login
-              sort: asc
-      example-9:
-        select:
-          from:
-            table: users
-          columns:
-            - column: '*'
-          rows:
-            limit: 10
-      example-10:
-        select:
-          from:
-            table: users
-          columns:
-            - column: '*'
-          rows:
-            limit: 10
-            offset: 10
+  database-create:
+    description: DATABASE-CREATE creates a new database.
     properties:
-      select:
-        type: object
-        required:
-          - from
-          - columns
+      database-create:
         properties:
-          from:
-            $ref: '#/definitions/table'
-          columns:
-            type: array
-            items:
-              $ref: '#/definitions/expression'
-          where:
-            type: array
-            items:
-              $ref: '#/definitions/criteria'
-          joins:
-            type: array
-            items:
-              type: object
-              properties:
-                with:
-                  $ref: '#/definitions/table'
-                having:
-                  type: array
-                  minItems: 1
-                  items:
-                    $ref: '#/definitions/criteria'
-              required:
-                - with
-                - having
-          group-by:
-            type: array
-            items:
-              $ref: '#/definitions/expression'
-          having:
-            type: array
-            items:
-              $ref: '#/definitions/criteria'
-          order-by:
-            type: array
-            items:
-              allOf:
-                - $ref: '#/definitions/column'
-                - type: object
-                  properties:
-                    sort:
-                      type: string
-                      enum:
-                        - asc
-                        - ascending
-                        - desc
-                        - descending
-          rows:
-            type: object
-            properties:
-              limit:
-                type: number
-              offset:
-                type: number
-            required:
-              - limit
-    required:
-      - select
-    description: SELECT retrieves rows from zero or more tables.
-    x-tags:
-      - query
-  insert:
-    title: insert
-    type: object
-    description: INSERT inserts new rows into a table.
-    x-examples:
-      example-1:
-        insert:
-          into:
-            table: users
-          values:
-            - value: 1
-            - value: root
-            - value: secret
-      example-2:
-        insert:
-          into:
-            table: users
-          columns:
-            - column: id
-            - column: login
-            - column: password
-          values:
-            - value: 1
-            - value: root
-            - value: secret
-      example-3:
-        insert:
-          into:
-            table: users
-          default: true
-      example-4:
-        insert:
-          into:
-            table: users
-          query:
-            select:
-              from:
-                table: users
-              columns:
-                - column: '*'
-      example-5:
-        insert:
-          into:
-            table: users
-          columns:
-            - column: login
-            - column: password
-          query:
-            select:
-              from:
-                table: applicants
-              columns:
-                - column: username
-                - column: password
-              where:
-                - not-null:
-                    column: verified
-    properties:
-      insert:
-        type: object
-        required:
-          - into
-        properties:
-          into:
-            $ref: '#/definitions/table'
-          columns:
-            type: array
-            items:
-              $ref: '#/definitions/column'
-          values:
-            type: array
-            items:
-              type: object
-              properties:
-                value:
-                  $ref: '#/definitions/expression'
-              required:
-                - value
-          query:
-            $ref: '#/definitions/select'
-          default:
+          name:
+            maxLength: 255
+            type: string
+          safe:
             type: boolean
+        required:
+          - name
+        type: object
     required:
-      - insert
+      - database-create
+    title: database-create
+    type: object
+    x-examples:
+      example-1:
+        database-create:
+          name: users
+      example-2:
+        database-create:
+          name: users
+          safe: true
     x-tags:
       - query
-  table:
-    title: table
-    type: object
-    description: TABLE represents a DATABASE table reference.
+  database-drop:
+    description: DATABASE-DROP removes an existing database.
     properties:
-      table:
-        type: string
-        maxLength: 255
-      schema:
-        type: string
-        maxLength: 255
-      alias:
-        type: string
-        maxLength: 255
-    required:
-      - table
-    x-examples:
-      example-1:
-        table: users
-      example-2:
-        table: users
-        alias: u
-    x-tags:
-      - reference
-  update:
-    title: update
-    type: object
-    x-examples:
-      example-1:
-        update:
-          for:
-            table: users
-          columns:
-            - column: login
-              value: admin
-          where:
-            - not-null:
-                column: verified
-      example-2:
-        update:
-          for:
-            table: users
-          columns:
-            - column: login
-              value: admin
-            - column: password
-              value: secret
-          where:
-            - eq:
-                - column: id
-                - 1
-    properties:
-      update:
-        type: object
-        required:
-          - for
-          - columns
+      database-drop:
         properties:
-          for:
-            $ref: '#/definitions/table'
-          columns:
-            type: array
-            items:
-              allOf:
-                - $ref: '#/definitions/column'
-                - type: object
-                  properties:
-                    value:
-                      $ref: '#/definitions/expression'
-                  required:
-                    - value
-          where:
-            type: array
-            items:
-              $ref: '#/definitions/criteria'
+          name:
+            maxLength: 255
+            type: string
+          safe:
+            type: boolean
+        required:
+          - name
+        type: object
     required:
-      - update
-    description: UPDATE changes the values of the specified columns in all rows that satisfy the condition.
+      - database-drop
+    title: database-drop
+    type: object
+    x-examples:
+      example-1:
+        database-drop:
+          name: users
+      example-2:
+        database-drop:
+          name: users
+          safe: true
     x-tags:
       - query
   delete:
-    title: delete
-    type: object
+    description: DELETE deletes existing rows from the table.
     properties:
       delete:
-        type: object
-        required:
-          - from
         properties:
           from:
             $ref: '#/definitions/table'
           where:
-            type: array
             items:
               $ref: '#/definitions/criteria'
+            type: array
+        required:
+          - from
+        type: object
     required:
       - delete
+    title: delete
+    type: object
     x-examples:
       example-1:
         delete:
@@ -1084,64 +1054,422 @@ definitions:
             - eq:
                 - column: id
                 - 123
-    description: DELETE deletes existing rows from the table.
     x-tags:
       - query
-  database-create:
-    title: database-create
+  expression:
+    description: EXPRESSION represents a valid SQL expression.
+    oneOf:
+      - $ref: '#/definitions/literal'
+      - $ref: '#/definitions/column'
+      - $ref: '#/definitions/function'
+      - $ref: '#/definitions/verbatim'
+      - $ref: '#/definitions/binding'
+      - $ref: '#/definitions/binary'
+      - $ref: '#/definitions/unary'
+      - $ref: '#/definitions/cast'
+      - $ref: '#/definitions/case'
+      - $ref: '#/definitions/as'
+      - $ref: '#/definitions/subquery'
+    title: expression
+    x-examples:
+      example-1: 123
+      example-2:
+        column: id
+      example-3:
+        func:
+          - true
+      example-4:
+        func:
+          - false
+      example-5:
+        bind: login
+      example-6:
+        binary:
+          plus:
+            - 1
+            - 1
+      example-7:
+        unary:
+          plus: 1
+      example-8:
+        cast:
+          - 12.34
+          - int
+      example-9:
+        case:
+          else: 0
+          when:
+            - cond:
+                eq:
+                  - 1
+                  - 1
+              then: 1
+    x-tags:
+      - expression
+  function:
+    description: FUNCTION is an EXPRESSION which represents a built-in SQL function.
+    properties:
+      func:
+        items:
+          $ref: '#/definitions/expression'
+        minItems: 1
+        type: array
+    required:
+      - func
+    title: function
     type: object
     x-examples:
       example-1:
-        database-create:
-          name: users
+        func:
+          - true
       example-2:
-        database-create:
-          name: users
-          safe: true
-    properties:
-      database-create:
-        type: object
-        required:
-          - name
-        properties:
-          name:
-            type: string
-            maxLength: 255
-          safe:
-            type: boolean
-    required:
-      - database-create
-    description: DATABASE-CREATE creates a new database.
+        func:
+          - false
+      example-3:
+        func:
+          - date
+          - now
     x-tags:
-      - query
-  database-drop:
-    title: database-drop
-    type: object
+      - expression
+  index-create:
+    description: INDEX-CREATE changes the definition of an existing table by adding a new column index.
     properties:
-      database-drop:
-        type: object
-        required:
-          - name
-        properties:
-          name:
-            type: string
-            maxLength: 255
-          safe:
-            type: boolean
+      index-create:
+        allOf:
+          - properties:
+              name:
+                maxLength: 255
+                type: string
+              safe:
+                type: boolean
+              unique:
+                type: boolean
+            type: object
+          - $ref: '#/definitions/table'
+          - $ref: '#/definitions/column'
     required:
-      - database-drop
+      - index-create
+    title: index-create
+    type: object
     x-examples:
       example-1:
-        database-drop:
-          name: users
+        index-create:
+          column: email
+          table: users
       example-2:
+        index-create:
+          column: email
+          name: indx_users_email
+          table: users
+      example-3:
+        index-create:
+          column: email
+          name: indx_uni_users_email
+          table: users
+          unique: true
+    x-tags:
+      - query
+  index-drop:
+    description: INDEX-DROP removes an existing new column index.
+    properties:
+      index-drop:
+        anyOf:
+          - properties:
+              name:
+                maxLength: 255
+                type: string
+              safe:
+                type: boolean
+            required:
+              - name
+            type: object
+          - allOf:
+              - properties:
+                  name:
+                    maxLength: 255
+                    type: string
+                  safe:
+                    type: boolean
+                  unique:
+                    type: boolean
+                type: object
+              - $ref: '#/definitions/table'
+              - $ref: '#/definitions/column'
+    required:
+      - index-drop
+    title: index-drop
+    type: object
+    x-examples:
+      example-1:
+        index-drop:
+          column: email
+          table: users
+      example-2:
+        index-drop:
+          column: email
+          name: indx_users_email
+          table: users
+      example-3:
+        index-drop:
+          name: indx_users_email
+    x-tags:
+      - query
+  insert:
+    description: INSERT inserts new rows into a table.
+    properties:
+      insert:
+        properties:
+          columns:
+            items:
+              $ref: '#/definitions/column'
+            type: array
+          default:
+            type: boolean
+          into:
+            $ref: '#/definitions/table'
+          query:
+            $ref: '#/definitions/select'
+          values:
+            items:
+              properties:
+                value:
+                  $ref: '#/definitions/expression'
+              required:
+                - value
+              type: object
+            type: array
+        required:
+          - into
+        type: object
+    required:
+      - insert
+    title: insert
+    type: object
+    x-examples:
+      example-1:
+        insert:
+          into:
+            table: users
+          values:
+            - value: 1
+            - value: root
+            - value: secret
+      example-2:
+        insert:
+          columns:
+            - column: id
+            - column: login
+            - column: password
+          into:
+            table: users
+          values:
+            - value: 1
+            - value: root
+            - value: secret
+      example-3:
+        insert:
+          default: true
+          into:
+            table: users
+      example-4:
+        insert:
+          into:
+            table: users
+          query:
+            select:
+              columns:
+                - column: '*'
+              from:
+                table: users
+      example-5:
+        insert:
+          columns:
+            - column: login
+            - column: password
+          into:
+            table: users
+          query:
+            select:
+              columns:
+                - column: username
+                - column: password
+              from:
+                table: applicants
+              where:
+                - not-null:
+                    column: verified
+    x-tags:
+      - query
+  literal:
+    description: LITERAL represents acceptable raw SQL data types.
+    title: literal
+    type:
+      - string
+      - number
+      - integer
+      - boolean
+      - 'null'
+    x-examples:
+      example-1: secret
+      example-2: 12345
+      example-3: 1.2345
+      example-4: -12345
+      example-5: false
+      example-6: true
+      example-7: null
+    x-tags:
+      - expression
+  query:
+    description: QUERY represents a valid SQL statement.
+    oneOf:
+      - $ref: '#/definitions/select'
+      - $ref: '#/definitions/insert'
+      - $ref: '#/definitions/update'
+      - $ref: '#/definitions/delete'
+      - $ref: '#/definitions/column-change'
+      - $ref: '#/definitions/column-create'
+      - $ref: '#/definitions/column-drop'
+      - $ref: '#/definitions/column-rename'
+      - $ref: '#/definitions/constraint-create'
+      - $ref: '#/definitions/constraint-drop'
+      - $ref: '#/definitions/database-create'
+      - $ref: '#/definitions/database-drop'
+      - $ref: '#/definitions/index-create'
+      - $ref: '#/definitions/index-drop'
+      - $ref: '#/definitions/schema-create'
+      - $ref: '#/definitions/schema-drop'
+      - $ref: '#/definitions/schema-rename'
+      - $ref: '#/definitions/table-create'
+      - $ref: '#/definitions/table-drop'
+      - $ref: '#/definitions/table-rename'
+      - $ref: '#/definitions/transaction'
+      - $ref: '#/definitions/view-create'
+      - $ref: '#/definitions/view-drop'
+    title: query
+    x-examples:
+      example-1:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+      example-10:
         database-drop:
           name: users
-          safe: true
-    description: DATABASE-DROP removes an existing database.
+      example-11:
+        schema-create:
+          name: private
+      example-12:
+        schema-drop:
+          name: private
+      example-13:
+        schema-rename:
+          name:
+            new: internal
+            old: private
+      example-14:
+        table-create:
+          columns:
+            - increment: true
+              name: id
+              primary: true
+              type: integer
+          name: users
+      example-15:
+        table-drop:
+          name: users
+      example-16:
+        table-rename:
+          name:
+            new: staff
+            old: users
+      example-17:
+        view-create:
+          name: active_users
+          query:
+            select:
+              columns:
+                - column: '*'
+              from:
+                table: users
+              where:
+                - not-null:
+                    column: active
+      example-18:
+        view-drop:
+          name: active_users
+      example-2:
+        insert:
+          into:
+            table: users
+          values:
+            - value: 1
+            - value: root
+            - value: secret
+      example-3:
+        update:
+          columns:
+            - column: login
+              value: admin
+          for:
+            table: users
+          where:
+            - not-null:
+                column: verified
+      example-4:
+        delete:
+          from:
+            table: users
+      example-5:
+        column-create:
+          column:
+            name: email
+            type: string
+          for:
+            table: users
+      example-6:
+        column-rename:
+          for:
+            table: users
+          name:
+            new: email_address
+            old: email
+      example-7:
+        constraint-create:
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+      example-8:
+        constraint-drop:
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+      example-9:
+        database-create:
+          name: users
     x-tags:
       - query
   schema-create:
+    description: SCHEMA-CREATE enters a new schema into the current database.
+    properties:
+      schema-create:
+        properties:
+          name:
+            maxLength: 255
+            type: string
+          safe:
+            type: boolean
+        required:
+          - name
+        type: object
+    required:
+      - schema-create
     title: schema-create
     type: object
     x-examples:
@@ -1152,23 +1480,23 @@ definitions:
         schema-create:
           name: private
           safe: true
-    properties:
-      schema-create:
-        type: object
-        required:
-          - name
-        properties:
-          name:
-            type: string
-            maxLength: 255
-          safe:
-            type: boolean
-    required:
-      - schema-create
-    description: SCHEMA-CREATE enters a new schema into the current database.
     x-tags:
       - query
   schema-drop:
+    description: SCHEMA-DROP removes an existing schema from the current database.
+    properties:
+      schema-drop:
+        properties:
+          name:
+            maxLength: 255
+            type: string
+          safe:
+            type: boolean
+        required:
+          - name
+        type: object
+    required:
+      - schema-drop
     title: schema-drop
     type: object
     x-examples:
@@ -1179,133 +1507,486 @@ definitions:
         schema-drop:
           name: private
           safe: true
-    properties:
-      schema-drop:
-        type: object
-        required:
-          - name
-        properties:
-          name:
-            type: string
-            maxLength: 255
-          safe:
-            type: boolean
-    required:
-      - schema-drop
-    description: SCHEMA-DROP removes an existing schema from the current database.
     x-tags:
       - query
   schema-rename:
+    description: SCHEMA-RENAME renames an existing schema definition.
+    properties:
+      schema-rename:
+        properties:
+          name:
+            properties:
+              new:
+                maxLength: 255
+                type: string
+              old:
+                maxLength: 255
+                type: string
+            required:
+              - new
+              - old
+            type: object
+        required:
+          - name
+        type: object
+    required:
+      - schema-rename
     title: schema-rename
     type: object
     x-examples:
       example-1:
         schema-rename:
           name:
-            old: private
             new: internal
-    properties:
-      schema-rename:
-        type: object
-        required:
-          - name
-        properties:
-          name:
-            type: object
-            required:
-              - new
-              - old
-            properties:
-              new:
-                type: string
-                maxLength: 255
-              old:
-                type: string
-                maxLength: 255
-    required:
-      - schema-rename
-    description: SCHEMA-RENAME renames an existing schema definition.
+            old: private
     x-tags:
       - query
-  table-create:
-    title: table-create
+  select:
+    description: SELECT retrieves rows from zero or more tables.
+    properties:
+      select:
+        properties:
+          columns:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
+          from:
+            oneOf:
+              - $ref: '#/definitions/table'
+              - items:
+                  $ref: '#/definitions/table'
+                type: array
+          group-by:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
+          having:
+            items:
+              $ref: '#/definitions/criteria'
+            type: array
+          joins:
+            items:
+              properties:
+                having:
+                  items:
+                    $ref: '#/definitions/criteria'
+                  minItems: 1
+                  type: array
+                with:
+                  $ref: '#/definitions/table'
+              required:
+                - with
+                - having
+              type: object
+            type: array
+          order-by:
+            items:
+              allOf:
+                - $ref: '#/definitions/column'
+                - properties:
+                    sort:
+                      enum:
+                        - asc
+                        - ascending
+                        - desc
+                        - descending
+                      type: string
+                  type: object
+            type: array
+          rows:
+            properties:
+              limit:
+                type: number
+              offset:
+                type: number
+            required:
+              - limit
+            type: object
+          where:
+            items:
+              $ref: '#/definitions/criteria'
+            type: array
+        required:
+          - from
+          - columns
+        type: object
+    required:
+      - select
+    title: select
     type: object
+    x-examples:
+      example-1:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+      example-10:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+          rows:
+            limit: 10
+            offset: 10
+      example-11:
+        select:
+          columns:
+            - alias: s
+              column: '*'
+            - alias: u
+              column: '*'
+          from:
+            - alias: s
+              table: staff
+            - alias: u
+              table: users
+          where:
+            - eq:
+                - alias: s
+                  column: user_id
+                - alias: u
+                  column: id
+      example-2:
+        select:
+          columns:
+            - column: id
+            - column: login
+          from:
+            table: users
+      example-3:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+          where:
+            - not-null:
+                column: verified
+      example-4:
+        select:
+          columns:
+            - column: '*'
+          from:
+            alias: u
+            table: users
+          joins:
+            - having:
+                - eq:
+                    - alias: p
+                      column: id
+                    - alias: u
+                      column: profile_id
+              with:
+                alias: p
+                table: profiles
+      example-5:
+        select:
+          columns:
+            - func:
+                - count
+                - column: id
+            - column: country
+          from:
+            table: users
+          group-by:
+            - column: country
+      example-6:
+        select:
+          columns:
+            - func:
+                - count
+                - column: id
+            - column: country
+          from:
+            table: users
+          group-by:
+            - column: country
+          having:
+            - gt:
+                - func:
+                    - count
+                    - column: id
+                - 5
+      example-7:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+          order-by:
+            - column: id
+              sort: desc
+      example-8:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+          order-by:
+            - column: id
+              sort: desc
+            - column: login
+              sort: asc
+      example-9:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+          rows:
+            limit: 10
+    x-tags:
+      - query
+  subquery:
+    description: SUBQUERY represents a SELECT (SQL select statement) as an EXPRESSION.
+    properties:
+      subquery:
+        $ref: '#/definitions/select'
+    required:
+      - subquery
+    title: subquery
+    type: object
+    x-examples:
+      example-1:
+        subquery:
+          select:
+            columns:
+              - column: id
+            from:
+              table: users
+      example-2:
+        subquery:
+          select:
+            columns:
+              - func:
+                  - count
+                  - column: id
+            from:
+              table: users
+    x-tags:
+      - query
+  table:
+    description: TABLE represents a DATABASE table reference.
+    properties:
+      alias:
+        maxLength: 255
+        type: string
+      schema:
+        maxLength: 255
+        type: string
+      table:
+        maxLength: 255
+        type: string
+    required:
+      - table
+    title: table
+    type: object
+    x-examples:
+      example-1:
+        table: users
+      example-2:
+        alias: u
+        table: users
+    x-tags:
+      - reference
+  table-create:
     description: 'TABLE-CREATE will create a new, initially empty table in the current database.'
     properties:
       table-create:
-        type: object
-        required:
-          - name
         properties:
-          name:
-            type: string
-            maxLength: 255
-          temp:
-            type: boolean
-          safe:
-            type: boolean
           columns:
-            type: array
-            minItems: 1
             items:
-              type: object
-              properties:
-                name:
-                  type: string
-                  maxLength: 255
-                type:
-                  $ref: '#/definitions/type'
-                default:
-                  $ref: '#/definitions/literal'
-                nullable:
-                  type: boolean
-                primary:
-                  type: boolean
-                sequence:
-                  type: boolean
-              required:
-                - name
-                - type
+              $ref: '#/definitions/column-definition'
+            minItems: 1
+            type: array
+          name:
+            maxLength: 255
+            type: string
           query:
             $ref: '#/definitions/select'
+          safe:
+            type: boolean
+          temp:
+            type: boolean
+        required:
+          - name
+        type: object
     required:
       - table-create
+    title: table-create
+    type: object
     x-examples:
       example-1:
         table-create:
-          name: users
           columns:
-            - name: id
-              type: integer
+            - increment: true
+              name: id
               primary: true
-              sequence: true
+              type: integer
+          name: users
       example-2:
         table-create:
-          name: removed_users
-          temp: true
-          safe: true
           columns:
-            - name: id
-              type: integer
+            - increment: true
+              name: id
               primary: true
-              sequence: true
+              type: integer
+          name: removed_users
+          safe: true
+          temp: true
       example-3:
         table-create:
           name: removed_users
-          temp: true
-          safe: true
           query:
             select:
-              from:
-                table: users
               columns:
                 - column: id
                 - column: login
+              from:
+                table: users
+          safe: true
+          temp: true
+    x-tags:
+      - query
+  table-drop:
+    description: TABLE-DROP removes tables from the database.
+    properties:
+      table-drop:
+        properties:
+          condition:
+            enum:
+              - cascade
+              - restrict
+            maxLength: 255
+            type: string
+          name:
+            maxLength: 255
+            type: string
+          safe:
+            type: boolean
+        required:
+          - name
+        type: object
+    required:
+      - table-drop
+    title: table-drop
+    type: object
+    x-examples:
+      example-1:
+        table-drop:
+          name: users
+      example-2:
+        table-drop:
+          name: users
+          safe: true
+      example-3:
+        table-drop:
+          condition: cascade
+          name: users
+          safe: true
+    x-tags:
+      - query
+  table-rename:
+    description: TABLE-RENAME changes the definition of an existing table.
+    properties:
+      table-rename:
+        properties:
+          name:
+            properties:
+              new:
+                maxLength: 255
+                type: string
+              old:
+                maxLength: 255
+                type: string
+            required:
+              - new
+              - old
+            type: object
+          safe:
+            type: boolean
+        required:
+          - name
+        type: object
+    required:
+      - table-rename
+    title: table-rename
+    type: object
+    x-examples:
+      example-1:
+        table-rename:
+          name:
+            new: staff
+            old: users
+      example-2:
+        table-rename:
+          name:
+            new: staff
+            old: users
+          safe: true
+    x-tags:
+      - query
+  transaction:
+    description: TRANSACTION represents a set of valid SQL statements to be executed within a database transaction.
+    properties:
+      transaction:
+        properties:
+          mode:
+            items:
+              maxLength: 255
+              type: string
+            type: array
+          queries:
+            items:
+              $ref: '#/definitions/query'
+            type: array
+        required:
+          - queries
+        type: object
+    required:
+      - transaction
+    title: transaction
+    type: object
+    x-examples:
+      example-1:
+        transaction:
+          queries:
+            - table-create:
+                columns:
+                  - name: id
+                    primary: true
+                    type: integer
+                name: users
+            - table-create:
+                columns:
+                  - name: id
+                    primary: true
+                    type: integer
+                name: profiles
+      example-2:
+        transaction:
+          mode:
+            - deferrable
+          queries:
+            - table-create:
+                columns:
+                  - name: id
+                    primary: true
+                    type: integer
+                name: users
+            - table-create:
+                columns:
+                  - name: id
+                    primary: true
+                    type: integer
+                name: profiles
     x-tags:
       - query
   type:
-    type: string
-    title: type
+    default: string
+    description: TYPE represents an acceptable SQL data type string.
     enum:
       - binary
       - boolean
@@ -1337,163 +2018,262 @@ definitions:
       - time-wtz
       - timestamp
       - timestamp-wtz
-    default: string
+      - uuid
     maxLength: 255
+    title: type
+    type: string
     x-examples:
-      example-1: string
-      example-2: number
-      example-3: integer
-      example-4: integer-big
-    description: TYPE represents an acceptable SQL data type string.
+      example-1: binary
+      example-2: boolean
+      example-3: char
+      example-4: date
+      example-5: datetime
+      example-6: datetime-wtz
+      example-7: decimal
+      example-8: double
+      example-9: enum
+      example-10: float
+      example-11: integer
+      example-12: integer-big
+      example-13: integer-big-unsigned
+      example-14: integer-medium
+      example-15: integer-medium-unsigned
+      example-16: integer-small
+      example-17: integer-small-unsigned
+      example-18: integer-tiny
+      example-19: integer-tiny-unsigned
+      example-20: integer-unsigned
+      example-21: json
+      example-22: number
+      example-23: string
+      example-24: text
+      example-25: text-long
+      example-26: text-medium
+      example-27: time
+      example-28: time-wtz
+      example-29: timestamp
+      example-30: timestamp-wtz
+      example-31: uuid
     x-tags:
       - reference
-  table-drop:
-    title: table-drop
-    type: object
+  unary:
+    description: UNARY is an EXPRESSION which uses the first EXPRESSION to perform a unary operation.
     properties:
-      table-drop:
-        type: object
-        required:
-          - name
-        properties:
-          name:
-            type: string
-            maxLength: 255
-          safe:
-            type: boolean
-          condition:
-            type: string
-            enum:
-              - cascade
-              - restrict
-            maxLength: 255
-    required:
-      - table-drop
-    x-examples:
-      example-1:
-        table-drop:
-          name: users
-      example-2:
-        table-drop:
-          name: users
-          safe: true
-      example-3:
-        table-drop:
-          name: users
-          safe: true
-          condition: cascade
-    description: TABLE-DROP removes tables from the database.
-    x-tags:
-      - query
-  table-rename:
-    title: table-rename
-    type: object
-    x-examples:
-      example-1:
-        table-rename:
-          name:
-            old: users
-            new: staff
-    properties:
-      table-rename:
-        type: object
-        required:
-          - name
-        properties:
-          name:
-            type: object
+      unary:
+        oneOf:
+          - properties:
+              plus:
+                $ref: '#/definitions/expression'
             required:
-              - new
-              - old
-            properties:
-              new:
-                type: string
-                maxLength: 255
-              old:
-                type: string
-                maxLength: 255
+              - plus
+          - properties:
+              minus:
+                $ref: '#/definitions/expression'
+            required:
+              - minus
+        type: object
     required:
-      - table-rename
-    description: TABLE-RENAME changes the definition of an existing table.
+      - unary
+    title: unary
+    type: object
+    x-examples:
+      example-1:
+        unary:
+          plus: 1000
+      example-2:
+        unary:
+          plus:
+            column: amount
+      example-3:
+        unary:
+          minus: 1000
+      example-4:
+        unary:
+          minus:
+            column: amount
+    x-tags:
+      - expression
+  update:
+    description: UPDATE changes the values of the specified columns in all rows that satisfy the condition.
+    properties:
+      update:
+        properties:
+          columns:
+            items:
+              allOf:
+                - $ref: '#/definitions/column'
+                - properties:
+                    value:
+                      $ref: '#/definitions/expression'
+                  required:
+                    - value
+                  type: object
+            type: array
+          for:
+            $ref: '#/definitions/table'
+          where:
+            items:
+              $ref: '#/definitions/criteria'
+            type: array
+        required:
+          - for
+          - columns
+        type: object
+    required:
+      - update
+    title: update
+    type: object
+    x-examples:
+      example-1:
+        update:
+          columns:
+            - column: login
+              value: admin
+          for:
+            table: users
+          where:
+            - not-null:
+                column: verified
+      example-2:
+        update:
+          columns:
+            - column: login
+              value: admin
+            - column: password
+              value: secret
+          for:
+            table: users
+          where:
+            - eq:
+                - column: id
+                - 1
+      example-3:
+        update:
+          columns:
+            - column: login
+              value: admin
+            - column: password
+              value: secret
+          for:
+            table: users
+          where:
+            - eq:
+                - column: id
+                - subquery:
+                    select:
+                      columns:
+                        - func:
+                            - min
+                            - column: id
+                      from:
+                        table: users
     x-tags:
       - query
-  view-create:
-    title: view-create
+  verbatim:
+    description: VERBATIM represents a built-in SQL keyword (and optional arguments).
+    properties:
+      verbatim:
+        items:
+          $ref: '#/definitions/literal'
+        type: array
+    required:
+      - verbatim
+    title: verbatim
     type: object
+    x-examples:
+      example-1:
+        verbatim:
+          - 'NULL'
+      example-2:
+        verbatim:
+          - NOT NULL
+      example-3:
+        verbatim:
+          - CURRENT_TIMESTAMP
+      example-4:
+        verbatim:
+          - TIMESTAMP
+          - 2000-01-01 00:00:00
+    x-tags:
+      - expression
+  view-create:
+    description: VIEW-CREATE defines a view of a query.
     properties:
       view-create:
-        type: object
+        properties:
+          columns:
+            items:
+              properties:
+                column:
+                  maxLength: 255
+                  type: string
+              required:
+                - column
+              type: object
+            type: array
+          name:
+            maxLength: 255
+            type: string
+          query:
+            $ref: '#/definitions/select'
+          safe:
+            type: boolean
+          temp:
+            type: boolean
         required:
           - name
           - query
-        properties:
-          name:
-            type: string
-            maxLength: 255
-          temp:
-            type: boolean
-          safe:
-            type: boolean
-          columns:
-            type: array
-            items:
-              type: object
-              properties:
-                column:
-                  type: string
-                  maxLength: 255
-              required:
-                - column
-          query:
-            $ref: '#/definitions/select'
+        type: object
     required:
       - view-create
+    title: view-create
+    type: object
     x-examples:
       example-1:
         view-create:
           name: active_users
           query:
             select:
-              from:
-                table: users
               columns:
                 - column: '*'
+              from:
+                table: users
               where:
                 - not-null:
                     column: active
       example-2:
         view-create:
           name: active_users
-          temp: true
-          safe: true
           query:
             select:
-              from:
-                table: users
               columns:
                 - column: '*'
+              from:
+                table: users
               where:
                 - not-null:
                     column: active
-    description: VIEW-CREATE defines a view of a query.
+          safe: true
+          temp: true
     x-tags:
       - query
   view-drop:
-    title: view-drop
-    type: object
+    description: VIEW-DROP drops an existing view.
     properties:
       view-drop:
-        type: object
-        required:
-          - name
         properties:
           name:
-            type: string
             maxLength: 255
+            type: string
           safe:
             type: boolean
+        required:
+          - name
+        type: object
     required:
       - view-drop
+    title: view-drop
+    type: object
     x-examples:
       example-1:
         view-drop:
@@ -1502,413 +2282,8 @@ definitions:
         view-drop:
           name: active_users
           safe: true
-    description: VIEW-DROP drops an existing view.
     x-tags:
       - query
-  column-rename:
-    title: column-rename
-    type: object
-    x-examples:
-      example-1:
-        column-rename:
-          for:
-            table: users
-          name:
-            old: email
-            new: email_address
-      example-2:
-        column-rename:
-          for:
-            table: users
-          name:
-            old: created
-            new: created_at
-      example-3:
-        column-rename:
-          for:
-            table: users
-          name:
-            old: updated
-            new: updated_at
-    properties:
-      column-rename:
-        type: object
-        required:
-          - name
-          - for
-        properties:
-          name:
-            type: object
-            required:
-              - new
-              - old
-            properties:
-              new:
-                type: string
-                maxLength: 255
-              old:
-                type: string
-                maxLength: 255
-          for:
-            $ref: '#/definitions/table'
-    required:
-      - column-rename
-    description: COLUMN-RENAME changes the definition of an existing table by renaming a new column.
-    x-tags:
-      - query
-  column-create:
-    title: column-create
-    type: object
-    description: COLUMN-CREATE changes the definition of an existing table by adding a new column.
-    x-examples:
-      example-1:
-        column-create:
-          for:
-            table: users
-          column:
-            name: email
-            type: string
-      example-2:
-        column-create:
-          for:
-            table: users
-          column:
-            name: verified
-            type: date
-            nullable: true
-      example-3:
-        column-create:
-          for:
-            table: users
-          column:
-            name: id
-            type: integer
-            nullable: false
-            primary: true
-            sequence: true
-    properties:
-      column-create:
-        type: object
-        required:
-          - for
-          - column
-        properties:
-          for:
-            $ref: '#/definitions/table'
-          column:
-            type: object
-            required:
-              - name
-              - type
-            properties:
-              name:
-                type: string
-                maxLength: 255
-              type:
-                $ref: '#/definitions/type'
-              default:
-                $ref: '#/definitions/literal'
-              nullable:
-                type: boolean
-              primary:
-                type: boolean
-              sequence:
-                type: boolean
-    required:
-      - column-create
-    x-tags:
-      - query
-  criterion-and:
-    title: criterion-and
-    type: object
-    x-examples:
-      example-1:
-        and:
-          - eq:
-              - column: role
-              - guest
-          - not-null:
-              column: verified
-    properties:
-      and:
-        type: array
-        items:
-          $ref: '#/definitions/criteria'
-    required:
-      - and
-    description: 'CRITERION-AND is a criterion which represents a condition which joins the CRITERIA provided using the "AND" operator.'
-    x-tags:
-      - criteria
-  criterion-or:
-    title: criterion-or
-    type: object
-    x-examples:
-      example-1:
-        or:
-          - eq:
-              - column: role
-              - guest
-          - eq:
-              - column: role
-              - user
-    properties:
-      or:
-        type: array
-        items:
-          $ref: '#/definitions/criteria'
-    required:
-      - or
-    description: 'CRITERION-OR is a condition which joins the CRITERIA provided using the "OR" operator.'
-    x-tags:
-      - criteria
-  query:
-    title: query
-    oneOf:
-      - $ref: '#/definitions/select'
-      - $ref: '#/definitions/insert'
-      - $ref: '#/definitions/update'
-      - $ref: '#/definitions/delete'
-      - $ref: '#/definitions/column-create'
-      - $ref: '#/definitions/column-rename'
-      - $ref: '#/definitions/database-create'
-      - $ref: '#/definitions/database-drop'
-      - $ref: '#/definitions/schema-create'
-      - $ref: '#/definitions/schema-drop'
-      - $ref: '#/definitions/schema-rename'
-      - $ref: '#/definitions/table-create'
-      - $ref: '#/definitions/table-drop'
-      - $ref: '#/definitions/table-rename'
-      - $ref: '#/definitions/view-create'
-      - $ref: '#/definitions/view-drop'
-    description: QUERY represents a valid SQL statement.
-    x-tags:
-      - query
-  constraint-create:
-    title: constraint-create
-    type: object
-    properties:
-      constraint-create:
-        type: object
-        required:
-          - source
-          - target
-        properties:
-          name:
-            type: string
-            maxLength: 255
-          source:
-            allOf:
-              - $ref: '#/definitions/table'
-              - $ref: '#/definitions/column'
-          target:
-            allOf:
-              - $ref: '#/definitions/table'
-              - $ref: '#/definitions/column'
-    required:
-      - constraint-create
-    x-examples:
-      example-1:
-        constraint-create:
-          source:
-            table: users
-            column: profile_id
-          target:
-            table: profiles
-            column: id
-      example-2:
-        constraint-create:
-          name: fkey_users_profile_id
-          source:
-            table: users
-            column: profile_id
-          target:
-            table: profiles
-            column: id
-    x-tags:
-      - query
-    description: CONSTRAINT-CREATE changes the definition of an existing table by adding a new foreign-key constraint.
-  constraint-drop:
-    title: constraint-drop
-    type: object
-    properties:
-      constraint-drop:
-        anyOf:
-          - type: object
-            properties:
-              name:
-                type: string
-                maxLength: 255
-            required:
-              - name
-          - type: object
-            required:
-              - source
-              - target
-            properties:
-              source:
-                allOf:
-                  - $ref: '#/definitions/table'
-                  - $ref: '#/definitions/column'
-              target:
-                allOf:
-                  - $ref: '#/definitions/table'
-                  - $ref: '#/definitions/column'
-    required:
-      - constraint-drop
-    x-examples:
-      example-1:
-        constraint-drop:
-          source:
-            table: users
-            column: profile_id
-          target:
-            table: profiles
-            column: id
-      example-2:
-        constraint-drop:
-          name: fkey_users_profile_id
-          source:
-            table: users
-            column: profile_id
-          target:
-            table: profiles
-            column: id
-      example-3:
-        constraint-drop:
-          name: fkey_users_profile_id
-    x-tags:
-      - query
-    description: CONSTRAINT-DROP removes an existing foreign-key constraint.
-  index-create:
-    title: index-create
-    type: object
-    x-examples:
-      example-1:
-        index-create:
-          table: users
-          column: email
-      example-2:
-        index-create:
-          name: indx_users_email
-          table: users
-          column: email
-      example-3:
-        index-create:
-          name: indx_uni_users_email
-          table: users
-          column: email
-          unique: true
-    properties:
-      index-create:
-        allOf:
-          - type: object
-            properties:
-              name:
-                type: string
-                maxLength: 255
-              unique:
-                type: boolean
-          - $ref: '#/definitions/table'
-          - $ref: '#/definitions/column'
-    required:
-      - index-create
-    x-tags:
-      - query
-    description: INDEX-CREATE changes the definition of an existing table by adding a new column index.
-  index-drop:
-    title: index-drop
-    type: object
-    x-examples:
-      example-1:
-        index-drop:
-          table: users
-          column: email
-      example-2:
-        index-drop:
-          name: indx_users_email
-          table: users
-          column: email
-      example-3:
-        index-drop:
-          name: indx_users_email
-    properties:
-      index-drop:
-        anyOf:
-          - type: object
-            properties:
-              name:
-                type: string
-                maxLength: 255
-            required:
-              - name
-          - allOf:
-            - type: object
-              properties:
-                name:
-                  type: string
-                  maxLength: 255
-                unique:
-                  type: boolean
-            - $ref: '#/definitions/table'
-            - $ref: '#/definitions/column'
-    required:
-      - index-drop
-    x-tags:
-      - query
-    description: INDEX-DROP removes an existing new column index.
-  transaction:
-    title: transaction
-    type: object
-    x-examples:
-      example-1:
-        transaction:
-          queries:
-            - table-create:
-                name: users
-                columns:
-                  - name: id
-                    type: integer
-                    primary: true
-            - table-create:
-                name: profiles
-                columns:
-                  - name: id
-                    type: integer
-                    primary: true
-      example-2:
-        transaction:
-          mode:
-            - deferrable
-          queries:
-            - table-create:
-                name: users
-                columns:
-                  - name: id
-                    type: integer
-                    primary: true
-            - table-create:
-                name: profiles
-                columns:
-                  - name: id
-                    type: integer
-                    primary: true
-    properties:
-      transaction:
-        type: object
-        required:
-          - queries
-        properties:
-          mode:
-            type: array
-            items:
-              type: string
-              maxLength: 255
-          queries:
-            type: array
-            items:
-              $ref: '#/definitions/query'
-    required:
-      - transaction
-    x-tags:
-      - query
-    description: TRANSACTION represents a set of valid SQL statements to be executed within a database transaction.
+oneOf:
+  - $ref: '#/definitions/query'
+  - $ref: '#/definitions/transaction'

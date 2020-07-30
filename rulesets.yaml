@@ -2183,7 +2183,7 @@ definitions:
     x-examples:
       example-1:
         verbatim:
-          - NULL
+          - 'NULL'
       example-2:
         verbatim:
           - NOT NULL
