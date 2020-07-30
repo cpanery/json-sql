@@ -253,41 +253,41 @@ definitions:
     x-tags:
       - reference
   column-change:
-    title: column-change
-    type: object
     description: COLUMN-CHANGE changes the definition of an existing table and column.
-    x-examples:
-      example-1:
-        column-change:
-          for:
-            table: users
-          column:
-            name: login_attempts
-            type: integer-big
-            nullable: false
-      example-2:
-        column-change:
-          for:
-            table: users
-          column:
-            name: last_login_at
-            type: timestamp
-            default:
-              verbatim:
-                - CURRENT_TIMESTAMP
     properties:
       column-change:
+        properties:
+          column:
+            $ref: '#/definitions/column-definition'
+          for:
+            $ref: '#/definitions/table'
         required:
           - for
           - column
         type: object
-        properties:
-          for:
-            $ref: '#/definitions/table'
-          column:
-            $ref: '#/definitions/column-definition'
     required:
       - column-change
+    title: column-change
+    type: object
+    x-examples:
+      example-1:
+        column-change:
+          column:
+            name: login_attempts
+            nullable: false
+            type: integer-big
+          for:
+            table: users
+      example-2:
+        column-change:
+          column:
+            default:
+              verbatim:
+                - CURRENT_TIMESTAMP
+            name: last_login_at
+            type: timestamp
+          for:
+            table: users
   column-create:
     description: COLUMN-CREATE changes the definition of an existing table by adding a new column.
     properties:
@@ -297,6 +297,8 @@ definitions:
             $ref: '#/definitions/column-definition'
           for:
             $ref: '#/definitions/table'
+          safe:
+            type: boolean
         required:
           - column
           - for
@@ -388,21 +390,25 @@ definitions:
     x-tags:
       - reference
   column-drop:
-    title: column-drop
-    type: object
     description: COLUMN-DROP removes an existing column from an existing table.
     properties:
       column-drop:
         allOf:
           - $ref: '#/definitions/table'
           - $ref: '#/definitions/column'
+          - properties:
+              safe:
+                type: boolean
+            type: object
     required:
       - column-drop
+    title: column-drop
+    type: object
     x-examples:
       example-1:
         column-drop:
-          table: users
           column: phone
+          table: users
   column-rename:
     description: COLUMN-RENAME changes the definition of an existing table by renaming a new column.
     properties:
@@ -472,6 +478,8 @@ definitions:
           name:
             maxLength: 255
             type: string
+          safe:
+            type: boolean
           source:
             allOf:
               - $ref: '#/definitions/table'
@@ -519,8 +527,12 @@ definitions:
                 type: string
             required:
               - name
+            safe:
+              type: boolean
             type: object
           - properties:
+              safe:
+                type: boolean
               source:
                 allOf:
                   - $ref: '#/definitions/table'
@@ -1128,6 +1140,8 @@ definitions:
               name:
                 maxLength: 255
                 type: string
+              safe:
+                type: boolean
               unique:
                 type: boolean
             type: object
@@ -1164,6 +1178,8 @@ definitions:
               name:
                 maxLength: 255
                 type: string
+              safe:
+                type: boolean
             required:
               - name
             type: object
@@ -1172,6 +1188,8 @@ definitions:
                   name:
                     maxLength: 255
                     type: string
+                  safe:
+                    type: boolean
                   unique:
                     type: boolean
                 type: object
@@ -1308,19 +1326,23 @@ definitions:
       - $ref: '#/definitions/insert'
       - $ref: '#/definitions/update'
       - $ref: '#/definitions/delete'
+      - $ref: '#/definitions/column-change'
       - $ref: '#/definitions/column-create'
-      - $ref: '#/definitions/column-rename'
       - $ref: '#/definitions/column-drop'
+      - $ref: '#/definitions/column-rename'
       - $ref: '#/definitions/constraint-create'
       - $ref: '#/definitions/constraint-drop'
       - $ref: '#/definitions/database-create'
       - $ref: '#/definitions/database-drop'
+      - $ref: '#/definitions/index-create'
+      - $ref: '#/definitions/index-drop'
       - $ref: '#/definitions/schema-create'
       - $ref: '#/definitions/schema-drop'
       - $ref: '#/definitions/schema-rename'
       - $ref: '#/definitions/table-create'
       - $ref: '#/definitions/table-drop'
       - $ref: '#/definitions/table-rename'
+      - $ref: '#/definitions/transaction'
       - $ref: '#/definitions/view-create'
       - $ref: '#/definitions/view-drop'
     title: query
@@ -1331,6 +1353,51 @@ definitions:
             - column: '*'
           from:
             table: users
+      example-10:
+        database-drop:
+          name: users
+      example-11:
+        schema-create:
+          name: private
+      example-12:
+        schema-drop:
+          name: private
+      example-13:
+        schema-rename:
+          name:
+            new: internal
+            old: private
+      example-14:
+        table-create:
+          columns:
+            - increment: true
+              name: id
+              primary: true
+              type: integer
+          name: users
+      example-15:
+        table-drop:
+          name: users
+      example-16:
+        table-rename:
+          name:
+            new: staff
+            old: users
+      example-17:
+        view-create:
+          name: active_users
+          query:
+            select:
+              columns:
+                - column: '*'
+              from:
+                table: users
+              where:
+                - not-null:
+                    column: active
+      example-18:
+        view-drop:
+          name: active_users
       example-2:
         insert:
           into:
@@ -1386,55 +1453,6 @@ definitions:
       example-9:
         database-create:
           name: users
-      example-2:
-        database-create:
-          name: users
-          safe: true
-      example-10:
-        database-drop:
-          name: users
-      example-11:
-        schema-create:
-          name: private
-      example-12:
-        schema-drop:
-          name: private
-      example-13:
-        schema-rename:
-          name:
-            new: internal
-            old: private
-      example-14:
-        table-create:
-          columns:
-            - increment: true
-              name: id
-              primary: true
-              type: integer
-          name: users
-      example-15:
-        table-drop:
-          name: users
-      example-16:
-        table-rename:
-          name:
-            new: staff
-            old: users
-      example-17:
-        view-create:
-          name: active_users
-          query:
-            select:
-              columns:
-                - column: '*'
-              from:
-                table: users
-              where:
-                - not-null:
-                    column: active
-      example-18:
-        view-drop:
-          name: active_users
     x-tags:
       - query
   schema-create:
@@ -1535,9 +1553,9 @@ definitions:
           from:
             oneOf:
               - $ref: '#/definitions/table'
-              - type: array
-                items:
+              - items:
                   $ref: '#/definitions/table'
+                type: array
           group-by:
             items:
               $ref: '#/definitions/expression'
@@ -1615,21 +1633,21 @@ definitions:
       example-11:
         select:
           columns:
-            - column: '*'
-              alias: s
-            - column: '*'
-              alias: u
+            - alias: s
+              column: '*'
+            - alias: u
+              column: '*'
           from:
-            - table: staff
-              alias: s
-            - table: users
-              alias: u
+            - alias: s
+              table: staff
+            - alias: u
+              table: users
           where:
             - eq:
-                - column: user_id
-                  alias: s
-                - column: id
-                  alias: u
+                - alias: s
+                  column: user_id
+                - alias: u
+                  column: id
       example-2:
         select:
           columns:
@@ -2145,8 +2163,8 @@ definitions:
                     select:
                       columns:
                         - func:
-                          - min
-                          - column: id
+                            - min
+                            - column: id
                       from:
                         table: users
     x-tags:
