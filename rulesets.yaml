@@ -2,6 +2,32 @@
 $id: https://raw.githubusercontent.com/iamalnewkirk/json-sql/master/rulesets.yaml
 $schema: https://json-schema.org/draft/2019-09/schema
 definitions:
+  as:
+    title: as
+    description: 'AS is an EXPRESSION which declares an alias for another EXPRESSION, typically in a column SELECT definition.'
+    type: object
+    properties:
+      as:
+        type: array
+        minItems: 2
+        maxItems: 2
+        items:
+          $ref: '#/definitions/expression'
+    required:
+      - as
+    x-examples:
+      example-1:
+        as:
+          - active
+          - 1
+      example-2:
+        as:
+          - inactive
+          - 0
+      example-3:
+        as:
+          - ssn
+          - column: social_security_number
   binary:
     description: BINARY is an EXPRESSION which uses the first and second EXPRESSION to perform a binary operation.
     properties:
@@ -971,6 +997,7 @@ definitions:
       - $ref: '#/definitions/unary'
       - $ref: '#/definitions/cast'
       - $ref: '#/definitions/case'
+      - $ref: '#/definitions/as'
     title: expression
     x-examples:
       example-1: 123
