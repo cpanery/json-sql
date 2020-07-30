@@ -1268,6 +1268,117 @@ definitions:
       - $ref: '#/definitions/view-create'
       - $ref: '#/definitions/view-drop'
     title: query
+    x-examples:
+      example-1:
+        select:
+          columns:
+            - column: '*'
+          from:
+            table: users
+      example-2:
+        insert:
+          into:
+            table: users
+          values:
+            - value: 1
+            - value: root
+            - value: secret
+      example-3:
+        update:
+          columns:
+            - column: login
+              value: admin
+          for:
+            table: users
+          where:
+            - not-null:
+                column: verified
+      example-4:
+        delete:
+          from:
+            table: users
+      example-5:
+        column-create:
+          column:
+            name: email
+            type: string
+          for:
+            table: users
+      example-6:
+        column-rename:
+          for:
+            table: users
+          name:
+            new: email_address
+            old: email
+      example-7:
+        constraint-create:
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+      example-8:
+        constraint-drop:
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
+      example-9:
+        database-create:
+          name: users
+      example-2:
+        database-create:
+          name: users
+          safe: true
+      example-10:
+        database-drop:
+          name: users
+      example-11:
+        schema-create:
+          name: private
+      example-12:
+        schema-drop:
+          name: private
+      example-13:
+        schema-rename:
+          name:
+            new: internal
+            old: private
+      example-14:
+        table-create:
+          columns:
+            - increment: true
+              name: id
+              primary: true
+              type: integer
+          name: users
+      example-15:
+        table-drop:
+          name: users
+      example-16:
+        table-rename:
+          name:
+            new: staff
+            old: users
+      example-17:
+        view-create:
+          name: active_users
+          query:
+            select:
+              columns:
+                - column: '*'
+              from:
+                table: users
+              where:
+                - not-null:
+                    column: active
+      example-18:
+        view-drop:
+          name: active_users
     x-tags:
       - query
   schema-create:
