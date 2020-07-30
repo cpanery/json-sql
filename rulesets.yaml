@@ -252,6 +252,42 @@ definitions:
         column: created
     x-tags:
       - reference
+  column-change:
+    title: column-change
+    type: object
+    description: COLUMN-CHANGE changes the definition of an existing table and column.
+    x-examples:
+      example-1:
+        column-change:
+          for:
+            table: users
+          column:
+            name: login_attempts
+            type: integer-big
+            nullable: false
+      example-2:
+        column-change:
+          for:
+            table: users
+          column:
+            name: last_login_at
+            type: timestamp
+            default:
+              verbatim:
+                - CURRENT_TIMESTAMP
+    properties:
+      column-change:
+        required:
+          - for
+          - column
+        type: object
+        properties:
+          for:
+            $ref: '#/definitions/table'
+          column:
+            $ref: '#/definitions/column-definition'
+    required:
+      - column-change
   column-create:
     description: COLUMN-CREATE changes the definition of an existing table by adding a new column.
     properties:
@@ -301,7 +337,10 @@ definitions:
     description: COLUMN-DEFINITION represents a table column definition.
     properties:
       default:
-        $ref: '#/definitions/literal'
+        oneOf:
+          - $ref: '#/definitions/literal'
+          - $ref: '#/definitions/function'
+          - $ref: '#/definitions/verbatim'
       increment:
         type: boolean
       name:
