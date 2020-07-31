@@ -1592,8 +1592,14 @@ INDEX-CREATE changes the definition of an existing table by adding a new column 
 ```
 {
    "index-create" : {
-      "column" : "email",
-      "table" : "users"
+      "columns" : [
+         {
+            "column" : "email"
+         }
+      ],
+      "for" : {
+         "table" : "users"
+      }
    }
 }
 ```
@@ -1603,9 +1609,15 @@ INDEX-CREATE changes the definition of an existing table by adding a new column 
 ```
 {
    "index-create" : {
-      "column" : "email",
-      "name" : "indx_users_email",
-      "table" : "users"
+      "columns" : [
+         {
+            "column" : "email"
+         }
+      ],
+      "for" : {
+         "table" : "users"
+      },
+      "name" : "idx_users_email"
    }
 }
 ```
@@ -1615,9 +1627,15 @@ INDEX-CREATE changes the definition of an existing table by adding a new column 
 ```
 {
    "index-create" : {
-      "column" : "email",
-      "name" : "indx_uni_users_email",
-      "table" : "users",
+      "columns" : [
+         {
+            "column" : "email"
+         }
+      ],
+      "for" : {
+         "table" : "users"
+      },
+      "name" : "idx_uni_users_email",
       "unique" : true
    }
 }
@@ -1634,8 +1652,14 @@ INDEX-DROP removes an existing new column index.
 ```
 {
    "index-drop" : {
-      "column" : "email",
-      "table" : "users"
+      "columns" : [
+         {
+            "column" : "email"
+         }
+      ],
+      "for" : {
+         "table" : "users"
+      }
    }
 }
 ```
@@ -1645,9 +1669,15 @@ INDEX-DROP removes an existing new column index.
 ```
 {
    "index-drop" : {
-      "column" : "email",
-      "name" : "indx_users_email",
-      "table" : "users"
+      "columns" : [
+         {
+            "column" : "email"
+         }
+      ],
+      "for" : {
+         "table" : "users"
+      },
+      "name" : "indx_users_email"
    }
 }
 ```
