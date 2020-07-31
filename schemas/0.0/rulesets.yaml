@@ -1135,18 +1135,24 @@ definitions:
     description: INDEX-CREATE changes the definition of an existing table by adding a new column index.
     properties:
       index-create:
-        allOf:
-          - properties:
-              name:
-                maxLength: 255
-                type: string
-              safe:
-                type: boolean
-              unique:
-                type: boolean
-            type: object
-          - $ref: '#/definitions/table'
-          - $ref: '#/definitions/column'
+        properties:
+          columns:
+            items:
+              $ref: '#/definitions/column'
+            type: array
+          for:
+            $ref: '#/definitions/table'
+          name:
+            maxLength: 255
+            type: string
+          safe:
+            type: boolean
+          unique:
+            type: boolean
+        required:
+          - for
+          - columns
+        type: object
     required:
       - index-create
     title: index-create
@@ -1154,18 +1160,24 @@ definitions:
     x-examples:
       example-1:
         index-create:
-          column: email
-          table: users
+          columns:
+            - column: email
+          for:
+            table: users
       example-2:
         index-create:
-          column: email
-          name: indx_users_email
-          table: users
+          columns:
+            - column: email
+          for:
+            table: users
+          name: idx_users_email
       example-3:
         index-create:
-          column: email
-          name: indx_uni_users_email
-          table: users
+          columns:
+            - column: email
+          for:
+            table: users
+          name: idx_uni_users_email
           unique: true
     x-tags:
       - query
@@ -1182,19 +1194,19 @@ definitions:
                 type: boolean
             required:
               - name
-            type: object
-          - allOf:
-              - properties:
-                  name:
-                    maxLength: 255
-                    type: string
-                  safe:
-                    type: boolean
-                  unique:
-                    type: boolean
-                type: object
-              - $ref: '#/definitions/table'
-              - $ref: '#/definitions/column'
+          - properties:
+              columns:
+                items:
+                  $ref: '#/definitions/column'
+                type: array
+              for:
+                $ref: '#/definitions/table'
+              safe:
+                type: boolean
+            required:
+              - for
+              - columns
+        type: object
     required:
       - index-drop
     title: index-drop
@@ -1202,13 +1214,17 @@ definitions:
     x-examples:
       example-1:
         index-drop:
-          column: email
-          table: users
+          columns:
+            - column: email
+          for:
+            table: users
       example-2:
         index-drop:
-          column: email
+          columns:
+            - column: email
+          for:
+            table: users
           name: indx_users_email
-          table: users
       example-3:
         index-drop:
           name: indx_users_email
