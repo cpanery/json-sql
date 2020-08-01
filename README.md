@@ -731,6 +731,29 @@ CONSTRAINT-CREATE changes the definition of an existing table by adding a new fo
 }
 ```
 
+### example-3
+
+```
+{
+   "constraint-create" : {
+      "name" : "fkey_users_profile_id",
+      "on" : {
+         "delete" : "cascade",
+         "update" : "cascade"
+      },
+      "safe" : true,
+      "source" : {
+         "column" : "profile_id",
+         "table" : "users"
+      },
+      "target" : {
+         "column" : "id",
+         "table" : "profiles"
+      }
+   }
+}
+```
+
 ## constraint-drop
 
 CONSTRAINT-DROP removes an existing foreign-key constraint.
@@ -777,7 +800,11 @@ CONSTRAINT-DROP removes an existing foreign-key constraint.
 ```
 {
    "constraint-drop" : {
-      "name" : "fkey_users_profile_id"
+      "name" : "fkey_users_profile_id",
+      "safe" : true,
+      "source" : {
+         "table" : "users"
+      }
    }
 }
 ```

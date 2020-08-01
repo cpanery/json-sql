@@ -478,6 +478,25 @@ definitions:
           name:
             maxLength: 255
             type: string
+          on:
+            properties:
+              delete:
+                enum:
+                  - cascade
+                  - no-action
+                  - restrict
+                  - set-default
+                  - set-null
+                type: string
+              update:
+                enum:
+                  - cascade
+                  - no-action
+                  - restrict
+                  - set-default
+                  - set-null
+                type: string
+            type: object
           safe:
             type: boolean
           source:
@@ -514,37 +533,42 @@ definitions:
           target:
             column: id
             table: profiles
+      example-3:
+        constraint-create:
+          name: fkey_users_profile_id
+          on:
+            delete: cascade
+            update: cascade
+          safe: true
+          source:
+            column: profile_id
+            table: users
+          target:
+            column: id
+            table: profiles
     x-tags:
       - query
   constraint-drop:
     description: CONSTRAINT-DROP removes an existing foreign-key constraint.
     properties:
       constraint-drop:
-        anyOf:
-          - properties:
-              name:
-                maxLength: 255
-                type: string
-            required:
-              - name
-            safe:
-              type: boolean
-            type: object
-          - properties:
-              safe:
-                type: boolean
-              source:
-                allOf:
-                  - $ref: '#/definitions/table'
-                  - $ref: '#/definitions/column'
-              target:
-                allOf:
-                  - $ref: '#/definitions/table'
-                  - $ref: '#/definitions/column'
-            required:
-              - source
-              - target
-            type: object
+        properties:
+          name:
+            maxLength: 255
+            type: string
+          safe:
+            type: boolean
+          source:
+            anyOf:
+              - $ref: '#/definitions/table'
+              - $ref: '#/definitions/column'
+          target:
+            allOf:
+              - $ref: '#/definitions/table'
+              - $ref: '#/definitions/column'
+        required:
+          - source
+        type: object
     required:
       - constraint-drop
     title: constraint-drop
@@ -570,6 +594,9 @@ definitions:
       example-3:
         constraint-drop:
           name: fkey_users_profile_id
+          safe: true
+          source:
+            table: users
     x-tags:
       - query
   criteria:
