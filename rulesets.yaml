@@ -261,6 +261,8 @@ definitions:
             $ref: '#/definitions/column-definition'
           for:
             $ref: '#/definitions/table'
+          safe:
+            type: boolean
         required:
           - for
           - column
