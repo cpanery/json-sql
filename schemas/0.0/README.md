@@ -408,7 +408,7 @@ CAST is an EXPRESSION which specifies a conversion from one data type to another
 {
    "cast" : [
       {
-         "func" : [
+         "function" : [
             "date",
             "now"
          ]
@@ -1071,7 +1071,7 @@ CRITERION-BETWEEN is a criterion which requires the first EXPRESSION to exist wi
          "column" : "created"
       },
       {
-         "func" : [
+         "function" : [
             "date",
             "now"
          ]
@@ -1089,7 +1089,7 @@ CRITERION-BETWEEN is a criterion which requires the first EXPRESSION to exist wi
          "column" : "created"
       },
       {
-         "func" : [
+         "function" : [
             "date",
             "now"
          ]
@@ -1104,14 +1104,14 @@ CRITERION-BETWEEN is a criterion which requires the first EXPRESSION to exist wi
 {
    "between" : [
       {
-         "func" : [
+         "function" : [
             "datetime",
             1092941466,
             "unixepoch"
          ]
       },
       {
-         "func" : [
+         "function" : [
             "date",
             "now"
          ]
@@ -1492,8 +1492,8 @@ EXPRESSION represents a valid SQL expression.
 
 ```
 {
-   "func" : [
-      true
+   "function" : [
+      "now"
    ]
 }
 ```
@@ -1502,21 +1502,11 @@ EXPRESSION represents a valid SQL expression.
 
 ```
 {
-   "func" : [
-      false
-   ]
-}
-```
-
-### example-5
-
-```
-{
    "bind" : "login"
 }
 ```
 
-### example-6
+### example-5
 
 ```
 {
@@ -1529,7 +1519,7 @@ EXPRESSION represents a valid SQL expression.
 }
 ```
 
-### example-7
+### example-6
 
 ```
 {
@@ -1539,7 +1529,7 @@ EXPRESSION represents a valid SQL expression.
 }
 ```
 
-### example-8
+### example-7
 
 ```
 {
@@ -1550,7 +1540,7 @@ EXPRESSION represents a valid SQL expression.
 }
 ```
 
-### example-9
+### example-8
 
 ```
 {
@@ -1571,6 +1561,39 @@ EXPRESSION represents a valid SQL expression.
 }
 ```
 
+### example-9
+
+```
+{
+   "verbatim" : [
+      true
+   ]
+}
+```
+
+### example-10
+
+```
+{
+   "verbatim" : [
+      false
+   ]
+}
+```
+
+### example-11
+
+```
+{
+   "as" : [
+      "subtotal",
+      {
+         "column" : "subtotal"
+      }
+   ]
+}
+```
+
 ## function
 
 FUNCTION is an EXPRESSION which represents a built-in SQL function.
@@ -1581,7 +1604,7 @@ FUNCTION is an EXPRESSION which represents a built-in SQL function.
 
 ```
 {
-   "func" : [
+   "function" : [
       true
    ]
 }
@@ -1591,7 +1614,7 @@ FUNCTION is an EXPRESSION which represents a built-in SQL function.
 
 ```
 {
-   "func" : [
+   "function" : [
       false
    ]
 }
@@ -1601,7 +1624,7 @@ FUNCTION is an EXPRESSION which represents a built-in SQL function.
 
 ```
 {
-   "func" : [
+   "function" : [
       "date",
       "now"
    ]
@@ -2378,7 +2401,7 @@ SELECT retrieves rows from zero or more tables.
    "select" : {
       "columns" : [
          {
-            "func" : [
+            "function" : [
                "count",
                {
                   "column" : "id"
@@ -2408,7 +2431,7 @@ SELECT retrieves rows from zero or more tables.
    "select" : {
       "columns" : [
          {
-            "func" : [
+            "function" : [
                "count",
                {
                   "column" : "id"
@@ -2431,7 +2454,7 @@ SELECT retrieves rows from zero or more tables.
          {
             "gt" : [
                {
-                  "func" : [
+                  "function" : [
                      "count",
                      {
                         "column" : "id"
@@ -2613,7 +2636,7 @@ SUBQUERY represents a SELECT (SQL select statement) as an EXPRESSION.
       "select" : {
          "columns" : [
             {
-               "func" : [
+               "function" : [
                   "count",
                   {
                      "column" : "id"
@@ -3208,7 +3231,7 @@ UPDATE changes the values of the specified columns in all rows that satisfy the 
                      "select" : {
                         "columns" : [
                            {
-                              "func" : [
+                              "function" : [
                                  "min",
                                  {
                                     "column" : "id"
