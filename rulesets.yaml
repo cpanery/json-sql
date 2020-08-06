@@ -126,18 +126,18 @@ definitions:
   binding:
     description: BINDING is an EXPRESSION which represents is a named-placeholder to be substituted later.
     properties:
-      bind:
+      binding:
         maxLength: 255
         type: string
     required:
-      - bind
+      - binding
     title: binding
     type: object
     x-examples:
       example-1:
-        bind: token
+        binding: token
       example-2:
-        bind: uuid
+        binding: uuid
     x-tags:
       - expression
   case:
@@ -1108,7 +1108,7 @@ definitions:
         function:
           - now
       example-4:
-        bind: login
+        binding: login
       example-5:
         binary:
           plus:
