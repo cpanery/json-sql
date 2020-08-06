@@ -278,7 +278,7 @@ BINDING is an EXPRESSION which represents is a named-placeholder to be substitut
 
 ```
 {
-   "bind" : "token"
+   "binding" : "token"
 }
 ```
 
@@ -286,7 +286,7 @@ BINDING is an EXPRESSION which represents is a named-placeholder to be substitut
 
 ```
 {
-   "bind" : "uuid"
+   "binding" : "uuid"
 }
 ```
 
@@ -1502,7 +1502,7 @@ EXPRESSION represents a valid SQL expression.
 
 ```
 {
-   "bind" : "login"
+   "binding" : "login"
 }
 ```
 
