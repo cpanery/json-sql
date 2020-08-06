@@ -226,7 +226,7 @@ definitions:
           - datetime
       example-3:
         cast:
-          - func:
+          - function:
               - date
               - now
           - varchar
@@ -726,22 +726,22 @@ definitions:
       example-2:
         between:
           - column: created
-          - func:
+          - function:
               - date
               - now
       example-3:
         between:
           - column: created
-          - func:
+          - function:
               - date
               - now
       example-4:
         between:
-          - func:
+          - function:
               - datetime
               - 1092941466
               - unixepoch
-          - func:
+          - function:
               - date
               - now
     x-tags:
@@ -1105,26 +1105,23 @@ definitions:
       example-2:
         column: id
       example-3:
-        func:
-          - true
+        function:
+          - now
       example-4:
-        func:
-          - false
-      example-5:
         bind: login
-      example-6:
+      example-5:
         binary:
           plus:
             - 1
             - 1
-      example-7:
+      example-6:
         unary:
           plus: 1
-      example-8:
+      example-7:
         cast:
           - 12.34
           - int
-      example-9:
+      example-8:
         case:
           else: 0
           when:
@@ -1133,29 +1130,39 @@ definitions:
                   - 1
                   - 1
               then: 1
+      example-9:
+        verbatim:
+          - TRUE
+      example-10:
+        verbatim:
+          - FALSE
+      example-11:
+        as:
+          - subtotal
+          - column: subtotal
     x-tags:
       - expression
   function:
     description: FUNCTION is an EXPRESSION which represents a built-in SQL function.
     properties:
-      func:
+      function:
         items:
           $ref: '#/definitions/expression'
         minItems: 1
         type: array
     required:
-      - func
+      - function
     title: function
     type: object
     x-examples:
       example-1:
-        func:
+        function:
           - true
       example-2:
-        func:
+        function:
           - false
       example-3:
-        func:
+        function:
           - date
           - now
     x-tags:
@@ -1729,7 +1736,7 @@ definitions:
       example-5:
         select:
           columns:
-            - func:
+            - function:
                 - count
                 - column: id
             - column: country
@@ -1740,7 +1747,7 @@ definitions:
       example-6:
         select:
           columns:
-            - func:
+            - function:
                 - count
                 - column: id
             - column: country
@@ -1750,7 +1757,7 @@ definitions:
             - column: country
           having:
             - gt:
-                - func:
+                - function:
                     - count
                     - column: id
                 - 5
@@ -1805,7 +1812,7 @@ definitions:
         subquery:
           select:
             columns:
-              - func:
+              - function:
                   - count
                   - column: id
             from:
@@ -2207,7 +2214,7 @@ definitions:
                 - subquery:
                     select:
                       columns:
-                        - func:
+                        - function:
                             - min
                             - column: id
                       from:
