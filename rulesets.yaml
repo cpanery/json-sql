@@ -1228,6 +1228,8 @@ definitions:
                 type: string
               safe:
                 type: boolean
+              unique:
+                type: boolean
             required:
               - name
           - properties:
@@ -1238,6 +1240,8 @@ definitions:
               for:
                 $ref: '#/definitions/table'
               safe:
+                type: boolean
+              unique:
                 type: boolean
             required:
               - for
@@ -1262,6 +1266,14 @@ definitions:
             table: users
           name: indx_users_email
       example-3:
+        index-drop:
+          columns:
+            - column: email
+          for:
+            table: users
+          name: indx_users_email
+          unique: true
+      example-4:
         index-drop:
           name: indx_users_email
     x-tags:
