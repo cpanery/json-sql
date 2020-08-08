@@ -1,5 +1,6 @@
 ---
 $id: https://raw.githubusercontent.com/iamalnewkirk/json-sql/master/rulesets.yaml
+$ref: '#/definitions/query'
 $schema: https://json-schema.org/draft/2019-09/schema
 definitions:
   as:
@@ -290,6 +291,8 @@ definitions:
             type: timestamp
           for:
             table: users
+    x-tags:
+      - query
   column-create:
     description: COLUMN-CREATE changes the definition of an existing table by adding a new column.
     properties:
@@ -411,6 +414,8 @@ definitions:
         column-drop:
           column: phone
           table: users
+    x-tags:
+      - query
   column-rename:
     description: COLUMN-RENAME changes the definition of an existing table by renaming a new column.
     properties:
@@ -2348,6 +2353,3 @@ definitions:
           safe: true
     x-tags:
       - query
-oneOf:
-  - $ref: '#/definitions/query'
-  - $ref: '#/definitions/transaction'

@@ -13,10 +13,8 @@ my ($schema) = $yaml->load_file('./rulesets.yaml');
 
 ok $schema->{'$id'}, 'has $id';
 ok $schema->{'$schema'}, 'has $schema';
-
-is_deeply $schema->{'oneOf'},
-  [{'$ref' => '#/definitions/query'}, {'$ref' => '#/definitions/transaction'}],
-  'has root; accepts (query or transaction)';
+is $schema->{'$ref'}, '#/definitions/query',
+  'has root; is a "query" reference';
 
 for my $name (sort keys %{$schema->{definitions}}) {
   subtest "definition ($name) is valid", sub {
@@ -68,6 +66,8 @@ for my $name (sort keys %{$schema->{definitions}}) {
 
       ok !@errors, "$name ($item) is a valid example";
     }
+
+    ok $def->{'x-tags'}, "$name has x-tags";
   };
 }
 
