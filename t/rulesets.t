@@ -13,11 +13,34 @@ my ($schema) = $yaml->load_file('./rulesets.yaml');
 
 ok $schema->{'$id'}, 'has $id';
 ok $schema->{'$schema'}, 'has $schema';
-is $schema->{'$ref'}, '#/definitions/query',
+is $schema->{'oneOf'}[0]{'$ref'}, '#/definitions/query',
   'has root; is a "query" reference';
 
+for my $query (@{$schema->{definitions}{query}{oneOf}}) {
+  my ($name) = $query->{'$ref'} =~ /#\/definitions\/([^\/]+)/;
+
+  subtest "as root definition ($name) is valid", sub {
+    my $validator = JSON::Validator->new;
+    $validator->coerce('booleans');
+    $validator->schema($schema);
+
+    my $def = $schema->{definitions}{$name};
+    for my $item (sort keys %{$def->{'x-examples'}}) {
+      my $example = $def->{'x-examples'}{$item};
+      my @errors = $validator->validate($example);
+
+      if ($ENV{TEST_DEBUG}) {
+        diag join "\n", map "$_", sort @errors if @errors;
+        diag explain $example if @errors;
+      }
+
+      ok !@errors, "$name ($item) is a valid example";
+    }
+  };
+}
+
 for my $name (sort keys %{$schema->{definitions}}) {
-  subtest "definition ($name) is valid", sub {
+  subtest "as exact definition ($name) is valid", sub {
     my $def = $schema->{definitions}{$name};
 
     if ($ENV{TEST_DEBUG}) {
@@ -50,10 +73,12 @@ for my $name (sort keys %{$schema->{definitions}}) {
       ok $def->{required}, "$name has at-least one required property";
     }
 
-    my $validator = JSON::Validator->new;
+    ok $def->{'x-examples'}, "$name has x-examples";
+    ok $def->{'x-tags'}, "$name has x-tags";
 
-    $validator->schema({%$def, definitions => $schema->{definitions}});
+    my $validator = JSON::Validator->new;
     $validator->coerce('booleans');
+    $validator->schema({%$def, definitions => $schema->{definitions}});
 
     for my $item (sort keys %{$def->{'x-examples'}}) {
       my $example = $def->{'x-examples'}{$item};
@@ -66,8 +91,6 @@ for my $name (sort keys %{$schema->{definitions}}) {
 
       ok !@errors, "$name ($item) is a valid example";
     }
-
-    ok $def->{'x-tags'}, "$name has x-tags";
   };
 }
 
