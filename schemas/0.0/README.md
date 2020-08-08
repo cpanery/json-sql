@@ -1737,6 +1737,25 @@ INDEX-DROP removes an existing new column index.
 ```
 {
    "index-drop" : {
+      "columns" : [
+         {
+            "column" : "email"
+         }
+      ],
+      "for" : {
+         "table" : "users"
+      },
+      "name" : "indx_users_email",
+      "unique" : true
+   }
+}
+```
+
+### example-4
+
+```
+{
+   "index-drop" : {
       "name" : "indx_users_email"
    }
 }
