@@ -623,6 +623,7 @@ definitions:
       - $ref: '#/definitions/criterion-and'
       - $ref: '#/definitions/criterion-or'
       - $ref: '#/definitions/criterion-is'
+      - $ref: '#/definitions/criterion-not'
     title: criteria
     x-examples:
       example-1:
@@ -976,6 +977,30 @@ definitions:
         ne:
           - column: status
           - unknown
+    x-tags:
+      - criteria
+  criterion-not:
+    description: CRITERION-NOT is a criterion which represents a scoped negation of an expression or criteria.
+    properties:
+      not:
+        oneOf:
+          - $ref: '#/definitions/expression'
+          - items:
+              $ref: '#/definitions/criteria'
+            type: array
+    required:
+      - not
+    title: criterion-not
+    type: object
+    x-examples:
+      example-1:
+        not:
+          column: verified
+      example-2:
+        not:
+          - eq:
+              - column: verified
+              - column: processed
     x-tags:
       - criteria
   criterion-not-null:
