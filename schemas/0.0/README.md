@@ -91,11 +91,13 @@ CREATE TEMPORARY TABLE IF NOT EXISTS inactive_users AS (
 - [criterion-gt](#criterion-gt)
 - [criterion-gte](#criterion-gte)
 - [criterion-in](#criterion-in)
+- [criterion-is](#criterion-is)
 - [criterion-is-null](#criterion-is-null)
 - [criterion-like](#criterion-like)
 - [criterion-lt](#criterion-lt)
 - [criterion-lte](#criterion-lte)
 - [criterion-ne](#criterion-ne)
+- [criterion-not](#criterion-not)
 - [criterion-not-null](#criterion-not-null)
 - [criterion-or](#criterion-or)
 - [criterion-regexp](#criterion-regexp)
@@ -1013,6 +1015,35 @@ CRITERIA is a set of rules (criterion) which can be combined to create condition
 }
 ```
 
+### example-15
+
+```
+{
+   "is" : {
+      "column" : "verified"
+   }
+}
+```
+
+### example-16
+
+```
+{
+   "is" : [
+      {
+         "eq" : [
+            {
+               "column" : "verified"
+            },
+            {
+               "column" : "processed"
+            }
+         ]
+      }
+   ]
+}
+```
+
 ## criterion-and
 
 CRITERION-AND is a criterion which represents a condition which joins the CRITERIA provided using the "AND" operator.
@@ -1216,6 +1247,41 @@ CRITERION-IN is a criterion which represents an "is included in the set" compari
 }
 ```
 
+## criterion-is
+
+CRITERION-IS is a criterion which represents a scoped expression or criteria.
+
+[definitions](#definitions)
+
+### example-1
+
+```
+{
+   "is" : {
+      "column" : "verified"
+   }
+}
+```
+
+### example-2
+
+```
+{
+   "is" : [
+      {
+         "eq" : [
+            {
+               "column" : "verified"
+            },
+            {
+               "column" : "processed"
+            }
+         ]
+      }
+   ]
+}
+```
+
 ## criterion-is-null
 
 CRITERION-IS-NULL is a criterion which represents an "is null" comparison operation.
@@ -1304,6 +1370,41 @@ CRITERION-NE is a criterion which represents a "not equal" comparison operation.
          "column" : "status"
       },
       "unknown"
+   ]
+}
+```
+
+## criterion-not
+
+CRITERION-NOT is a criterion which represents a scoped negation of an expression or criteria.
+
+[definitions](#definitions)
+
+### example-1
+
+```
+{
+   "not" : {
+      "column" : "verified"
+   }
+}
+```
+
+### example-2
+
+```
+{
+   "not" : [
+      {
+         "eq" : [
+            {
+               "column" : "verified"
+            },
+            {
+               "column" : "processed"
+            }
+         ]
+      }
    ]
 }
 ```
@@ -1462,6 +1563,23 @@ DELETE deletes existing rows from the table.
                },
                123
             ]
+         }
+      ]
+   }
+}
+```
+
+### example-3
+
+```
+{
+   "delete" : {
+      "from" : {
+         "table" : "users"
+      },
+      "returning" : [
+         {
+            "column" : "*"
          }
       ]
    }
@@ -1899,6 +2017,34 @@ INSERT inserts new rows into a table.
             ]
          }
       }
+   }
+}
+```
+
+### example-6
+
+```
+{
+   "insert" : {
+      "into" : {
+         "table" : "users"
+      },
+      "returning" : [
+         {
+            "column" : "*"
+         }
+      ],
+      "values" : [
+         {
+            "value" : 1
+         },
+         {
+            "value" : "root"
+         },
+         {
+            "value" : "secret"
+         }
+      ]
    }
 }
 ```
@@ -2765,6 +2911,70 @@ TABLE-CREATE will create a new, initially empty table in the current database.
 }
 ```
 
+### example-4
+
+```
+{
+   "table-create" : {
+      "columns" : [
+         {
+            "increment" : true,
+            "name" : "id",
+            "primary" : true,
+            "type" : "integer"
+         },
+         {
+            "name" : "email",
+            "type" : "string"
+         }
+      ],
+      "constraints" : [
+         {
+            "unique" : {
+               "columns" : [
+                  "email"
+               ]
+            }
+         }
+      ],
+      "name" : "users"
+   }
+}
+```
+
+### example-5
+
+```
+{
+   "table-create" : {
+      "columns" : [
+         {
+            "increment" : true,
+            "name" : "id",
+            "primary" : true,
+            "type" : "integer"
+         },
+         {
+            "name" : "profile_id",
+            "type" : "integer"
+         }
+      ],
+      "constraints" : [
+         {
+            "foreign" : {
+               "column" : "profile_id",
+               "reference" : {
+                  "column" : "id",
+                  "table" : "profiles"
+               }
+            }
+         }
+      ],
+      "name" : "users"
+   }
+}
+```
+
 ## table-drop
 
 TABLE-DROP removes tables from the database.
@@ -3265,6 +3475,36 @@ UPDATE changes the values of the specified columns in all rows that satisfy the 
                   }
                }
             ]
+         }
+      ]
+   }
+}
+```
+
+### example-4
+
+```
+{
+   "update" : {
+      "columns" : [
+         {
+            "column" : "login",
+            "value" : "admin"
+         }
+      ],
+      "for" : {
+         "table" : "users"
+      },
+      "returning" : [
+         {
+            "column" : "*"
+         }
+      ],
+      "where" : [
+         {
+            "not-null" : {
+               "column" : "verified"
+            }
          }
       ]
    }

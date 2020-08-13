@@ -622,6 +622,8 @@ definitions:
       - $ref: '#/definitions/criterion-regexp'
       - $ref: '#/definitions/criterion-and'
       - $ref: '#/definitions/criterion-or'
+      - $ref: '#/definitions/criterion-is'
+      - $ref: '#/definitions/criterion-not'
     title: criteria
     x-examples:
       example-1:
@@ -656,6 +658,14 @@ definitions:
           - eq:
               - column: role
               - user
+      example-15:
+        is:
+          column: verified
+      example-16:
+        is:
+          - eq:
+              - column: verified
+              - column: processed
       example-2:
         is-null:
           column: deleted
@@ -850,6 +860,30 @@ definitions:
           - dark
     x-tags:
       - criteria
+  criterion-is:
+    description: CRITERION-IS is a criterion which represents a scoped expression or criteria.
+    properties:
+      is:
+        oneOf:
+          - $ref: '#/definitions/expression'
+          - items:
+              $ref: '#/definitions/criteria'
+            type: array
+    required:
+      - is
+    title: criterion-is
+    type: object
+    x-examples:
+      example-1:
+        is:
+          column: verified
+      example-2:
+        is:
+          - eq:
+              - column: verified
+              - column: processed
+    x-tags:
+      - criteria
   criterion-is-null:
     description: CRITERION-IS-NULL is a criterion which represents an "is null" comparison operation.
     properties:
@@ -943,6 +977,30 @@ definitions:
         ne:
           - column: status
           - unknown
+    x-tags:
+      - criteria
+  criterion-not:
+    description: CRITERION-NOT is a criterion which represents a scoped negation of an expression or criteria.
+    properties:
+      not:
+        oneOf:
+          - $ref: '#/definitions/expression'
+          - items:
+              $ref: '#/definitions/criteria'
+            type: array
+    required:
+      - not
+    title: criterion-not
+    type: object
+    x-examples:
+      example-1:
+        not:
+          column: verified
+      example-2:
+        not:
+          - eq:
+              - column: verified
+              - column: processed
     x-tags:
       - criteria
   criterion-not-null:
@@ -1063,6 +1121,10 @@ definitions:
         properties:
           from:
             $ref: '#/definitions/table'
+          returning:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
           where:
             items:
               $ref: '#/definitions/criteria'
@@ -1087,6 +1149,12 @@ definitions:
             - eq:
                 - column: id
                 - 123
+      example-3:
+        delete:
+          from:
+            table: users
+          returning:
+            - column: '*'
     x-tags:
       - query
   expression:
@@ -1106,6 +1174,13 @@ definitions:
     title: expression
     x-examples:
       example-1: 123
+      example-10:
+        verbatim:
+          - FALSE
+      example-11:
+        as:
+          - subtotal
+          - column: subtotal
       example-2:
         column: id
       example-3:
@@ -1137,13 +1212,6 @@ definitions:
       example-9:
         verbatim:
           - TRUE
-      example-10:
-        verbatim:
-          - FALSE
-      example-11:
-        as:
-          - subtotal
-          - column: subtotal
     x-tags:
       - expression
   function:
@@ -1297,6 +1365,10 @@ definitions:
             $ref: '#/definitions/table'
           query:
             $ref: '#/definitions/select'
+          returning:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
           values:
             items:
               properties:
@@ -1366,6 +1438,16 @@ definitions:
               where:
                 - not-null:
                     column: verified
+      example-6:
+        insert:
+          into:
+            table: users
+          returning:
+            - column: '*'
+          values:
+            - value: 1
+            - value: root
+            - value: secret
     x-tags:
       - query
   literal:
@@ -1869,6 +1951,47 @@ definitions:
               $ref: '#/definitions/column-definition'
             minItems: 1
             type: array
+          constraints:
+            items:
+              oneOf:
+                - properties:
+                    foreign:
+                      properties:
+                        column:
+                          maxLength: 255
+                          type: string
+                        name:
+                          maxLength: 255
+                          type: string
+                        reference:
+                          allOf:
+                            - $ref: '#/definitions/table'
+                            - $ref: '#/definitions/column'
+                      required:
+                        - column
+                        - reference
+                      type: object
+                  required:
+                    - foreign
+                - properties:
+                    unique:
+                      properties:
+                        columns:
+                          items:
+                            maxLength: 255
+                            type: string
+                          minItems: 1
+                          type: array
+                        name:
+                          maxLength: 255
+                          type: string
+                      required:
+                        - columns
+                      type: object
+                  required:
+                    - unique
+              type: object
+            type: array
           name:
             maxLength: 255
             type: string
@@ -1916,6 +2039,36 @@ definitions:
                 table: users
           safe: true
           temp: true
+      example-4:
+        table-create:
+          columns:
+            - increment: true
+              name: id
+              primary: true
+              type: integer
+            - name: email
+              type: string
+          constraints:
+            - unique:
+                columns:
+                  - email
+          name: users
+      example-5:
+        table-create:
+          columns:
+            - increment: true
+              name: id
+              primary: true
+              type: integer
+            - name: profile_id
+              type: integer
+          constraints:
+            - foreign:
+                column: profile_id
+                reference:
+                  column: id
+                  table: profiles
+          name: users
     x-tags:
       - query
   table-drop:
@@ -2179,6 +2332,10 @@ definitions:
             type: array
           for:
             $ref: '#/definitions/table'
+          returning:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
           where:
             items:
               $ref: '#/definitions/criteria'
@@ -2235,6 +2392,18 @@ definitions:
                             - column: id
                       from:
                         table: users
+      example-4:
+        update:
+          columns:
+            - column: login
+              value: admin
+          for:
+            table: users
+          returning:
+            - column: '*'
+          where:
+            - not-null:
+                column: verified
     x-tags:
       - query
   verbatim:
