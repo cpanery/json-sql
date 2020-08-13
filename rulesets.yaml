@@ -1121,6 +1121,10 @@ definitions:
         properties:
           from:
             $ref: '#/definitions/table'
+          returning:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
           where:
             items:
               $ref: '#/definitions/criteria'
@@ -1145,6 +1149,12 @@ definitions:
             - eq:
                 - column: id
                 - 123
+      example-3:
+        delete:
+          from:
+            table: users
+          returning:
+            - column: '*'
     x-tags:
       - query
   expression:
@@ -1355,6 +1365,10 @@ definitions:
             $ref: '#/definitions/table'
           query:
             $ref: '#/definitions/select'
+          returning:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
           values:
             items:
               properties:
@@ -1424,6 +1438,16 @@ definitions:
               where:
                 - not-null:
                     column: verified
+      example-6:
+        insert:
+          into:
+            table: users
+          returning:
+            - column: '*'
+          values:
+            - value: 1
+            - value: root
+            - value: secret
     x-tags:
       - query
   literal:
@@ -2237,6 +2261,10 @@ definitions:
             type: array
           for:
             $ref: '#/definitions/table'
+          returning:
+            items:
+              $ref: '#/definitions/expression'
+            type: array
           where:
             items:
               $ref: '#/definitions/criteria'
@@ -2293,6 +2321,18 @@ definitions:
                             - column: id
                       from:
                         table: users
+      example-4:
+        update:
+          columns:
+            - column: login
+              value: admin
+          for:
+            table: users
+          returning:
+            - column: '*'
+          where:
+            - not-null:
+                column: verified
     x-tags:
       - query
   verbatim:
