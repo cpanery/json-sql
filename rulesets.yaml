@@ -1951,6 +1951,47 @@ definitions:
               $ref: '#/definitions/column-definition'
             minItems: 1
             type: array
+          constraints:
+            items:
+              oneOf:
+                - properties:
+                    foreign:
+                      properties:
+                        column:
+                          maxLength: 255
+                          type: string
+                        name:
+                          maxLength: 255
+                          type: string
+                        reference:
+                          allOf:
+                            - $ref: '#/definitions/table'
+                            - $ref: '#/definitions/column'
+                      required:
+                        - column
+                        - reference
+                      type: object
+                  required:
+                    - foreign
+                - properties:
+                    unique:
+                      properties:
+                        columns:
+                          items:
+                            maxLength: 255
+                            type: string
+                          minItems: 1
+                          type: array
+                        name:
+                          maxLength: 255
+                          type: string
+                      required:
+                        - columns
+                      type: object
+                  required:
+                    - unique
+              type: object
+            type: array
           name:
             maxLength: 255
             type: string
@@ -1998,6 +2039,36 @@ definitions:
                 table: users
           safe: true
           temp: true
+      example-4:
+        table-create:
+          columns:
+            - increment: true
+              name: id
+              primary: true
+              type: integer
+            - name: email
+              type: string
+          constraints:
+            - unique:
+                columns:
+                  - email
+          name: users
+      example-5:
+        table-create:
+          columns:
+            - increment: true
+              name: id
+              primary: true
+              type: integer
+            - name: profile_id
+              type: integer
+          constraints:
+            - foreign:
+                column: profile_id
+                reference:
+                  column: id
+                  table: profiles
+          name: users
     x-tags:
       - query
   table-drop:
