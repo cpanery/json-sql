@@ -622,6 +622,7 @@ definitions:
       - $ref: '#/definitions/criterion-regexp'
       - $ref: '#/definitions/criterion-and'
       - $ref: '#/definitions/criterion-or'
+      - $ref: '#/definitions/criterion-is'
     title: criteria
     x-examples:
       example-1:
@@ -656,6 +657,14 @@ definitions:
           - eq:
               - column: role
               - user
+      example-15:
+        is:
+          column: verified
+      example-16:
+        is:
+          - eq:
+              - column: verified
+              - column: processed
       example-2:
         is-null:
           column: deleted
@@ -848,6 +857,30 @@ definitions:
           - column: theme
           - light
           - dark
+    x-tags:
+      - criteria
+  criterion-is:
+    description: CRITERION-IS is a criterion which represents a scoped expression or criteria.
+    properties:
+      is:
+        oneOf:
+          - $ref: '#/definitions/expression'
+          - items:
+              $ref: '#/definitions/criteria'
+            type: array
+    required:
+      - is
+    title: criterion-is
+    type: object
+    x-examples:
+      example-1:
+        is:
+          column: verified
+      example-2:
+        is:
+          - eq:
+              - column: verified
+              - column: processed
     x-tags:
       - criteria
   criterion-is-null:
@@ -1106,6 +1139,13 @@ definitions:
     title: expression
     x-examples:
       example-1: 123
+      example-10:
+        verbatim:
+          - FALSE
+      example-11:
+        as:
+          - subtotal
+          - column: subtotal
       example-2:
         column: id
       example-3:
@@ -1137,13 +1177,6 @@ definitions:
       example-9:
         verbatim:
           - TRUE
-      example-10:
-        verbatim:
-          - FALSE
-      example-11:
-        as:
-          - subtotal
-          - column: subtotal
     x-tags:
       - expression
   function:
