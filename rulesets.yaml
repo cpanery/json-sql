@@ -476,6 +476,42 @@ definitions:
           safe: true
     x-tags:
       - query
+  constraint-condition:
+    description: CONSTRAINT-CONDITION represents a table constraint on-update/on-delete condition.
+    properties:
+      delete:
+        enum:
+          - cascade
+          - no-action
+          - restrict
+          - set-default
+          - set-null
+        type: string
+      update:
+        enum:
+          - cascade
+          - no-action
+          - restrict
+          - set-default
+          - set-null
+        type: string
+    required:
+      - update
+      - delete
+    title: constraint-condition
+    type: object
+    x-examples:
+      example-1:
+        delete: cascade
+        update: cascade
+      example-2:
+        delete: cascade
+        update: no-action
+      example-3:
+        delete: set-null
+        update: set-null
+    x-tags:
+      - reference
   constraint-create:
     description: CONSTRAINT-CREATE changes the definition of an existing table by adding a new foreign-key constraint.
     properties:
@@ -484,25 +520,8 @@ definitions:
           name:
             maxLength: 255
             type: string
-          on:
-            properties:
-              delete:
-                enum:
-                  - cascade
-                  - no-action
-                  - restrict
-                  - set-default
-                  - set-null
-                type: string
-              update:
-                enum:
-                  - cascade
-                  - no-action
-                  - restrict
-                  - set-default
-                  - set-null
-                type: string
-            type: object
+          'on':
+            $ref: '#/definitions/constraint-condition'
           safe:
             type: boolean
           source:
@@ -1963,6 +1982,8 @@ definitions:
                         name:
                           maxLength: 255
                           type: string
+                        'on':
+                          $ref: '#/definitions/constraint-condition'
                         reference:
                           allOf:
                             - $ref: '#/definitions/table'
