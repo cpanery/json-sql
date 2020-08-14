@@ -1722,6 +1722,13 @@ definitions:
                     $ref: '#/definitions/criteria'
                   minItems: 1
                   type: array
+                type:
+                  enum:
+                    - full-join
+                    - inner-join
+                    - left-join
+                    - right-join
+                  type: string
                 with:
                   $ref: '#/definitions/table'
               required:
@@ -1798,6 +1805,24 @@ definitions:
                   column: user_id
                 - alias: u
                   column: id
+      example-12:
+        select:
+          columns:
+            - column: '*'
+          from:
+            alias: u
+            table: users
+          joins:
+            - having:
+                - eq:
+                    - alias: p
+                      column: id
+                    - alias: u
+                      column: profile_id
+              type: inner-join
+              with:
+                alias: p
+                table: profiles
       example-2:
         select:
           columns:
