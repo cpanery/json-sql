@@ -81,6 +81,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS inactive_users AS (
 - [column-definition](#column-definition)
 - [column-drop](#column-drop)
 - [column-rename](#column-rename)
+- [constraint-condition](#constraint-condition)
 - [constraint-create](#constraint-create)
 - [constraint-drop](#constraint-drop)
 - [criteria](#criteria)
@@ -689,6 +690,39 @@ COLUMN-RENAME changes the definition of an existing table by renaming a new colu
       },
       "safe" : true
    }
+}
+```
+
+## constraint-condition
+
+CONSTRAINT-CONDITION represents a table constraint on-update/on-delete condition.
+
+[definitions](#definitions)
+
+### example-1
+
+```
+{
+   "delete" : "cascade",
+   "update" : "cascade"
+}
+```
+
+### example-2
+
+```
+{
+   "delete" : "cascade",
+   "update" : "no-action"
+}
+```
+
+### example-3
+
+```
+{
+   "delete" : "set-null",
+   "update" : "set-null"
 }
 ```
 
@@ -2762,6 +2796,47 @@ SELECT retrieves rows from zero or more tables.
                   "column" : "id"
                }
             ]
+         }
+      ]
+   }
+}
+```
+
+### example-12
+
+```
+{
+   "select" : {
+      "columns" : [
+         {
+            "column" : "*"
+         }
+      ],
+      "from" : {
+         "alias" : "u",
+         "table" : "users"
+      },
+      "joins" : [
+         {
+            "having" : [
+               {
+                  "eq" : [
+                     {
+                        "alias" : "p",
+                        "column" : "id"
+                     },
+                     {
+                        "alias" : "u",
+                        "column" : "profile_id"
+                     }
+                  ]
+               }
+            ],
+            "type" : "inner-join",
+            "with" : {
+               "alias" : "p",
+               "table" : "profiles"
+            }
          }
       ]
    }
