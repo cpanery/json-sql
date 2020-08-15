@@ -1514,6 +1514,7 @@ definitions:
       - $ref: '#/definitions/transaction'
       - $ref: '#/definitions/view-create'
       - $ref: '#/definitions/view-drop'
+      - $ref: '#/definitions/union'
     title: query
     x-examples:
       example-1:
@@ -2360,6 +2361,62 @@ definitions:
             column: amount
     x-tags:
       - expression
+  union:
+    description: UNION combines results from two or more select queries.
+    properties:
+      union:
+        properties:
+          queries:
+            items:
+              $ref: '#/definitions/query'
+            type: array
+          type:
+            enum:
+              - all
+              - distinct
+            type: string
+        required:
+          - queries
+        type: object
+    required:
+      - union
+    title: union
+    type: object
+    x-examples:
+      example-1:
+        union:
+          queries:
+            - select:
+                columns:
+                  - column: id
+                  - column: name
+                from:
+                  table: customers
+            - select:
+                columns:
+                  - column: id
+                  - column: name
+                from:
+                  table: employees
+          type: all
+      example-2:
+        union:
+          queries:
+            - select:
+                columns:
+                  - column: name
+                  - column: email
+                from:
+                  table: customers
+            - select:
+                columns:
+                  - column: name
+                  - column: email
+                from:
+                  table: employees
+          type: distinct
+    x-tags:
+      - query
   update:
     description: UPDATE changes the values of the specified columns in all rows that satisfy the condition.
     properties:

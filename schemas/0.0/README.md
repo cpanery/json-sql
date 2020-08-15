@@ -124,6 +124,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS inactive_users AS (
 - [transaction](#transaction)
 - [type](#type)
 - [unary](#unary)
+- [union](#union)
 - [update](#update)
 - [verbatim](#verbatim)
 - [view-create](#view-create)
@@ -3439,6 +3440,96 @@ UNARY is an EXPRESSION which uses the first EXPRESSION to perform a unary operat
       "minus" : {
          "column" : "amount"
       }
+   }
+}
+```
+
+## union
+
+UNION combines results from two or more select queries.
+
+[definitions](#definitions)
+
+### example-1
+
+```
+{
+   "union" : {
+      "queries" : [
+         {
+            "select" : {
+               "columns" : [
+                  {
+                     "column" : "id"
+                  },
+                  {
+                     "column" : "name"
+                  }
+               ],
+               "from" : {
+                  "table" : "customers"
+               }
+            }
+         },
+         {
+            "select" : {
+               "columns" : [
+                  {
+                     "column" : "id"
+                  },
+                  {
+                     "column" : "name"
+                  }
+               ],
+               "from" : {
+                  "table" : "employees"
+               }
+            }
+         }
+      ],
+      "type" : "all"
+   }
+}
+```
+
+### example-2
+
+```
+{
+   "union" : {
+      "queries" : [
+         {
+            "select" : {
+               "columns" : [
+                  {
+                     "column" : "name"
+                  },
+                  {
+                     "column" : "email"
+                  }
+               ],
+               "from" : {
+                  "table" : "customers"
+               }
+            }
+         },
+         {
+            "select" : {
+               "columns" : [
+                  {
+                     "column" : "name"
+                  },
+                  {
+                     "column" : "email"
+                  }
+               ],
+               "from" : {
+                  "table" : "employees"
+               }
+            }
+         }
+      ],
+      "type" : "distinct"
    }
 }
 ```
